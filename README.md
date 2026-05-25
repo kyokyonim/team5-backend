@@ -94,7 +94,7 @@ Team5 Web IDE
 | Cache / Presence | Redis 또는 서버 메모리 |
 | API Docs | Swagger / Springdoc |
 
-## 추천 패키지 구조
+## 패키지 구조
 
 ```plain text
 src/main/java/com/team5/webide
@@ -221,7 +221,7 @@ chore: 초기 Gradle 설정 추가
 
 `main`, `dev` 브랜치에는 직접 push하지 않고 Pull Request로만 병합합니다.
 
-### 작업 순서
+### ⭐️작업 순서⭐️
 
 ```plain text
 1. dev 최신 상태 받기
@@ -272,7 +272,7 @@ PR은 `dev` 브랜치를 대상으로 생성합니다.
 
 ### Merge 기준
 
-- 최소 1명 이상 코드 리뷰
+- 최소 1명 코드 리뷰
 - 충돌 없음
 - 로컬 테스트 통과
 - API 명세와 구현 내용 일치
