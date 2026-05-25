@@ -28,7 +28,7 @@ Team5 Web IDE
 | 도메인 설계 / ERD | https://www.notion.so/32bd3570df81824b94cf81a3d7f9d6d0 |
 | API 설계서 | https://www.notion.so/36b044633ac18134afe7fcf477b75562 |
 | Figma | https://www.figma.com/design/uJerc6vqBIaH3ZIxUoa5l2/WebIDE?node-id=136-1084&p=f&t=YFJNCiRACj1VGtIH-0 |
-| 기획서 | 추후 링크 추가 |
+| 기획서 | https://www.notion.so/WEB-IDE-35b8294ef2a88063b7e0e4b226d94c2f |
 
 ## 팀 구성과 역할
 
@@ -49,13 +49,13 @@ Team5 Web IDE
 | 기간 | 작업 | 담당 |
 | --- | --- | --- |
 | 1주차 | 도메인 설계, ERD, API 명세 정리 | 전체 |
-| 1주차 | 백엔드 레포 세팅 완료, 브랜치 전략, 공통 응답/예외 규칙 정리 | 정윤서, 전체 |
+| 1주차 | 백엔드 레포 세팅 완료, 브랜치 전략, 공통 응답/예외 규칙 정리 | 정윤서 |
 | 2주차 | Auth / User / Profile 구현 | 김다은 |
 | 2주차 | Project / ProjectMember 구현 | 정윤서 |
-| 2~3주차 | IDE / File 구현 | 최희원 |
+| 2주차 | IDE / File 구현 | 최희원 |
 | 3주차 | Chat / Presence / Comment / Log 구현 | 조아영 |
-| 4주차 | 통합 테스트, API 연결, 버그 수정 | 전체 |
-| 4주차 | 발표/시연 준비, README와 문서 정리 | 전체 |
+| 3주차 | 통합 테스트, API 연결, 버그 수정 | 전체 |
+| 3주차 | 발표/시연 준비, README와 문서 정리 | 전체 |
 
 ## MVP 범위
 
@@ -87,14 +87,14 @@ Team5 Web IDE
 | Language | Java |
 | Framework | Spring Boot |
 | Build | Gradle |
-| DB | MySQL 또는 H2 |
+| DB | PostgreSQL H2 |
 | ORM | Spring Data JPA |
 | Auth | Spring Security, JWT |
 | Realtime | WebSocket, STOMP |
 | Cache / Presence | Redis 또는 서버 메모리 |
 | API Docs | Swagger / Springdoc |
 
-## 추천 패키지 구조
+## 패키지 구조
 
 ```plain text
 src/main/java/com/team5/webide
@@ -221,7 +221,7 @@ chore: 초기 Gradle 설정 추가
 
 `main`, `dev` 브랜치에는 직접 push하지 않고 Pull Request로만 병합합니다.
 
-### 작업 순서
+### ⭐️작업 순서⭐️
 
 ```plain text
 1. dev 최신 상태 받기
@@ -272,7 +272,7 @@ PR은 `dev` 브랜치를 대상으로 생성합니다.
 
 ### Merge 기준
 
-- 최소 1명 이상 코드 리뷰
+- 최소 1명 코드 리뷰
 - 충돌 없음
 - 로컬 테스트 통과
 - API 명세와 구현 내용 일치
