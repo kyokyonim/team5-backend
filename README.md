@@ -102,13 +102,15 @@
   "success": true,
   "message": "요청이 성공했습니다.",
   "data": { ... }
-}```
+}
+```
 
-**❌실패했을 떄**
+**❌ 실패했을 때**
 ```json
 {
-"success": false,
+  "success": false,
   "code": "PROJECT_NOT_FOUND",
   "message": "존재하지 않는 프로젝트입니다.",
   "data": null
-}```
+}
+```
