@@ -52,10 +52,10 @@ Team5 Web IDE
 | 1주차 | 백엔드 레포 세팅 완료, 브랜치 전략, 공통 응답/예외 규칙 정리 | 정윤서 |
 | 2주차 | Auth / User / Profile 구현 | 김다은 |
 | 2주차 | Project / ProjectMember 구현 | 정윤서 |
-| 2~3주차 | IDE / File 구현 | 최희원 |
+| 2주차 | IDE / File 구현 | 최희원 |
 | 3주차 | Chat / Presence / Comment / Log 구현 | 조아영 |
-| 4주차 | 통합 테스트, API 연결, 버그 수정 | 전체 |
-| 4주차 | 발표/시연 준비, README와 문서 정리 | 전체 |
+| 3주차 | 통합 테스트, API 연결, 버그 수정 | 전체 |
+| 3주차 | 발표/시연 준비, README와 문서 정리 | 전체 |
 
 ## MVP 범위
 
