@@ -1,13 +1,13 @@
-# Team5 Backend
+# Team5 Web IDE
 
-Web IDE 서비스의 백엔드 레포지토리입니다.  
+Team5 Web IDE 서비스의 백엔드 레포지토리입니다.  
 사용자가 프로젝트를 만들고, 파일을 편집하고, 팀원과 실시간으로 협업할 수 있는 서비스를 목표로 합니다.
 
 ## 프로젝트 개요
 
 ### 서비스 이름
 
-EFIDE / Web IDE
+Team5 Web IDE
 
 ### 핵심 기능
 
@@ -24,10 +24,10 @@ EFIDE / Web IDE
 
 | 구분 | 링크 |
 | --- | --- |
-| 메인 Notion | https://www.notion.so/Notion-36bd3570df81800cbf7cdfb7a91a055c |
-| 도메인 설계 / ERD | https://www.notion.so/369044633ac181868668db2ed5456da2 |
+| 메인 Notion / API 1 | https://www.notion.so/API-1-bd5d3570df81836f81fc81d60d05dca5 |
+| 도메인 설계 / ERD | https://www.notion.so/32bd3570df81824b94cf81a3d7f9d6d0 |
 | API 설계서 | https://www.notion.so/36b044633ac18134afe7fcf477b75562 |
-| Figma | 추후 링크 추가 |
+| Figma | https://www.figma.com/design/uJerc6vqBIaH3ZIxUoa5l2/WebIDE?node-id=136-1084&p=f&t=YFJNCiRACj1VGtIH-0 |
 | 기획서 | 추후 링크 추가 |
 
 ## 팀 구성과 역할
@@ -49,7 +49,7 @@ EFIDE / Web IDE
 | 기간 | 작업 | 담당 |
 | --- | --- | --- |
 | 1주차 | 도메인 설계, ERD, API 명세 정리 | 전체 |
-| 1주차 | 백엔드 레포 세팅, 브랜치 전략, 공통 응답/예외 규칙 정리 | 전체 |
+| 1주차 | 백엔드 레포 세팅 완료, 브랜치 전략, 공통 응답/예외 규칙 정리 | 정윤서, 전체 |
 | 2주차 | Auth / User / Profile 구현 | 김다은 |
 | 2주차 | Project / ProjectMember 구현 | 정윤서 |
 | 2~3주차 | IDE / File 구현 | 최희원 |
