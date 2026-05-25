@@ -37,7 +37,7 @@
 | 담당자 | 담당 도메인 (Domain) | 내가 책임지는 기능들 🛠️ |
 | :--- | :--- | :--- |
 | **김다은** | Auth / User / Profile | 회원가입, 로그인(JWT), 구글 소셜 로그인, 내 정보/프로필 관리 |
-| **정윤서** | Project / Permission | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리 |
+| **정윤서** | Project / ProjectMember | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리 |
 | **최희원** | IDE / File | Monaco Editor 연결, 파일 트리, 파일/폴더 CRUD, 코드 저장 및 파일 잠금(Lock) |
 | **조아영** | Chat / Log / Comment | 실시간 채팅(WebSocket), 접속자 상태 표시, 활동 로그, 코드 라인 댓글 |
 
