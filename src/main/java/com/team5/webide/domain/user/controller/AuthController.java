@@ -1,5 +1,7 @@
 package com.team5.webide.domain.user.controller;
 
+import com.team5.webide.domain.user.dto.LoginRequestDto;
+import com.team5.webide.domain.user.dto.LoginResponseDto;
 import com.team5.webide.domain.user.dto.SignupRequestDto;
 import com.team5.webide.domain.user.entity.User;
 import com.team5.webide.domain.user.service.AuthService;
@@ -38,5 +40,12 @@ public class AuthController {
         boolean available = authService.checkEmail(email);
         return ResponseEntity.ok(ApiResponse.success("이메일 중복검사 완료",
                 Map.of("available", available)));
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequestDto dto) {
+        LoginResponseDto response = authService.login(dto.getEmail(), dto.getPassword());
+        return ResponseEntity.ok(ApiResponse.success("로그인 성공", response));
     }
 }
