@@ -28,7 +28,7 @@ Team5 Web IDE
 | 도메인 설계 / ERD | https://www.notion.so/32bd3570df81824b94cf81a3d7f9d6d0 |
 | API 설계서 | https://www.notion.so/36b044633ac18134afe7fcf477b75562 |
 | Figma | https://www.figma.com/design/uJerc6vqBIaH3ZIxUoa5l2/WebIDE?node-id=136-1084&p=f&t=YFJNCiRACj1VGtIH-0 |
-| 기획서 | 추후 링크 추가 |
+| 기획서 | https://www.notion.so/WEB-IDE-35b8294ef2a88063b7e0e4b226d94c2f |
 
 ## 팀 구성과 역할
 
