@@ -1,4 +1,6 @@
 package com.team5.web_ide.entity;
+import com.team5.web_ide.domain.user.entity.User;
+
 
 import jakarta.persistence.*;
 import lombok.Getter;
