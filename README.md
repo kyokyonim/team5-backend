@@ -87,7 +87,7 @@ Team5 Web IDE
 | Language | Java |
 | Framework | Spring Boot |
 | Build | Gradle |
-| DB | MySQL 또는 H2 |
+| DB | PostgreSQL H2 |
 | ORM | Spring Data JPA |
 | Auth | Spring Security, JWT |
 | Realtime | WebSocket, STOMP |
