@@ -1,4 +1,4 @@
-package com.team5.web_ide.controller;
+package com.team5.web_ide.domain.user.controller;
 import com.team5.web_ide.domain.user.entity.User;
 
 import com.team5.web_ide.domain.user.dto.LoginRequestDto;

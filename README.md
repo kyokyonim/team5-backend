@@ -56,7 +56,8 @@
 ---
 
 ## 📁 프로젝트 구조 (Project Structure)
-컨트롤러는 공통 진입점으로 `controller`에 두고, 도메인별 비즈니스 코드는 `domain/{도메인명}` 아래에서 관리합니다.
+도메인별 코드는 `domain/{도메인명}` 아래에서 관리하고, 각 도메인 내부 계층명은 `controller`, `service`, `repository`, `dto`, `entity`로 통일합니다.
+아직 구현 파일이 없는 계층 폴더는 만들지 않습니다.
 팀원들은 최신 `dev` 브랜치를 pull 받아 아래 폴더 구조를 그대로 유지하면서 작업합니다.
 
 ```text
@@ -68,10 +69,14 @@ team5-backend/
 |   |   |   |-- config/
 |   |   |   |   `-- SecurityConfig.java
 |   |   |   |-- controller/
-|   |   |   |   |-- AuthController.java
 |   |   |   |   `-- TestController.java
 |   |   |   |-- domain/
+|   |   |   |   |-- chat/
+|   |   |   |   |   `-- entity/
+|   |   |   |   |       `-- ChatMessage.java
 |   |   |   |   `-- user/
+|   |   |   |       |-- controller/
+|   |   |   |       |   `-- AuthController.java
 |   |   |   |       |-- dto/
 |   |   |   |       |   |-- LoginRequestDto.java
 |   |   |   |       |   |-- LoginResponseDto.java
@@ -82,8 +87,6 @@ team5-backend/
 |   |   |   |       |   `-- UserRepository.java
 |   |   |   |       `-- service/
 |   |   |   |           `-- AuthService.java
-|   |   |   |-- entity/
-|   |   |   |   `-- ChatMessage.java
 |   |   |   `-- global/
 |   |   |       |-- common/
 |   |   |       |   `-- BaseEntity.java
@@ -101,7 +104,7 @@ team5-backend/
 `-- gradlew
 ```
 
-새 도메인이 추가되면 `domain/project`, `domain/file`, `domain/comment`처럼 `domain` 아래에 도메인별 하위 폴더를 추가합니다.
+새 도메인이 추가되면 `domain/project`, `domain/file`, `domain/comment`처럼 `domain` 아래에 도메인별 하위 폴더를 추가하고, 필요한 계층을 같은 이름으로 만듭니다.
 
 ---
 
