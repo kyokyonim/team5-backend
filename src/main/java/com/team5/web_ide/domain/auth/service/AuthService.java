@@ -1,7 +1,7 @@
-package com.team5.web_ide.domain.user.service;
+package com.team5.web_ide.domain.auth.service;
 
-import com.team5.web_ide.domain.user.dto.LoginResponseDto;
-import com.team5.web_ide.domain.user.dto.SignupRequestDto;
+import com.team5.web_ide.domain.auth.dto.LoginResponseDto;
+import com.team5.web_ide.domain.auth.dto.SignupRequestDto;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
 import com.team5.web_ide.global.security.JwtUtil;

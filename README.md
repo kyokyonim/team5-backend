@@ -37,9 +37,9 @@
 | 담당자 | 담당 도메인 (Domain) | 내가 책임지는 기능들 🛠️ |
 | :--- | :--- | :--- |
 | **김다은** | Auth / User / Profile | 회원가입, 로그인(JWT), 구글 소셜 로그인, 내 정보/프로필 관리 |
-| **정윤서** | Project / ProjectMember | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리 |
+| **정윤서** | Project / Member | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리 |
 | **최희원** | IDE / File | Monaco Editor 연결, 파일 트리, 파일/폴더 CRUD, 코드 저장 및 파일 잠금(Lock) |
-| **조아영** | Chat / Log / Comment | 실시간 채팅(WebSocket), 접속자 상태 표시, 활동 로그, 코드 라인 댓글 |
+| **조아영** | Chat / Presence / Admin / Log | 실시간 채팅(WebSocket), 접속자 상태 표시, 관리자 기능, 활동 로그 |
 
 ---
 
@@ -60,6 +60,19 @@
 아직 구현 파일이 없는 계층 폴더는 만들지 않습니다.
 팀원들은 최신 `dev` 브랜치를 pull 받아 아래 폴더 구조를 그대로 유지하면서 작업합니다.
 
+### 도메인 기준
+
+| 도메인 그룹 | 패키지 경로 |
+| :--- | :--- |
+| Auth / User | `domain/auth`, `domain/user` |
+| Project / Member | `domain/project`, `domain/member` |
+| IDE / File | `domain/ide`, `domain/file` |
+| Chat / Presence | `domain/chat`, `domain/presence` |
+| Admin / Log | `domain/admin`, `domain/log` |
+| Profile | `domain/profile` |
+
+아래 트리는 현재 구현된 파일 기준입니다.
+
 ```text
 team5-backend/
 |-- src/
@@ -71,22 +84,23 @@ team5-backend/
 |   |   |   |-- controller/
 |   |   |   |   `-- TestController.java
 |   |   |   |-- domain/
+|   |   |   |   |-- auth/
+|   |   |   |   |   |-- controller/
+|   |   |   |   |   |   `-- AuthController.java
+|   |   |   |   |   |-- dto/
+|   |   |   |   |   |   |-- LoginRequestDto.java
+|   |   |   |   |   |   |-- LoginResponseDto.java
+|   |   |   |   |   |   `-- SignupRequestDto.java
+|   |   |   |   |   `-- service/
+|   |   |   |   |       `-- AuthService.java
 |   |   |   |   |-- chat/
 |   |   |   |   |   `-- entity/
 |   |   |   |   |       `-- ChatMessage.java
 |   |   |   |   `-- user/
-|   |   |   |       |-- controller/
-|   |   |   |       |   `-- AuthController.java
-|   |   |   |       |-- dto/
-|   |   |   |       |   |-- LoginRequestDto.java
-|   |   |   |       |   |-- LoginResponseDto.java
-|   |   |   |       |   `-- SignupRequestDto.java
 |   |   |   |       |-- entity/
 |   |   |   |       |   `-- User.java
-|   |   |   |       |-- repository/
-|   |   |   |       |   `-- UserRepository.java
-|   |   |   |       `-- service/
-|   |   |   |           `-- AuthService.java
+|   |   |   |       `-- repository/
+|   |   |   |           `-- UserRepository.java
 |   |   |   `-- global/
 |   |   |       |-- common/
 |   |   |       |   `-- BaseEntity.java
@@ -104,7 +118,7 @@ team5-backend/
 `-- gradlew
 ```
 
-새 도메인이 추가되면 `domain/project`, `domain/file`, `domain/comment`처럼 `domain` 아래에 도메인별 하위 폴더를 추가하고, 필요한 계층을 같은 이름으로 만듭니다.
+새 도메인이 추가되면 위 도메인 기준표에 맞춰 `domain/{도메인명}` 아래에 만들고, 필요한 계층을 같은 이름으로 만듭니다.
 
 ---
 

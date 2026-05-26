@@ -1,10 +1,10 @@
-package com.team5.web_ide.domain.user.controller;
+package com.team5.web_ide.domain.auth.controller;
 import com.team5.web_ide.domain.user.entity.User;
 
-import com.team5.web_ide.domain.user.dto.LoginRequestDto;
-import com.team5.web_ide.domain.user.dto.LoginResponseDto;
-import com.team5.web_ide.domain.user.dto.SignupRequestDto;
-import com.team5.web_ide.domain.user.service.AuthService;
+import com.team5.web_ide.domain.auth.dto.LoginRequestDto;
+import com.team5.web_ide.domain.auth.dto.LoginResponseDto;
+import com.team5.web_ide.domain.auth.dto.SignupRequestDto;
+import com.team5.web_ide.domain.auth.service.AuthService;
 import com.team5.web_ide.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
