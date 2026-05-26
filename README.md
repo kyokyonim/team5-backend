@@ -71,9 +71,6 @@ team5-backend/
 |   |   |   |   |-- AuthController.java
 |   |   |   |   `-- TestController.java
 |   |   |   |-- domain/
-|   |   |   |   |-- chat/
-|   |   |   |   |   `-- entity/
-|   |   |   |   |       `-- ChatMessage.java
 |   |   |   |   `-- user/
 |   |   |   |       |-- dto/
 |   |   |   |       |   |-- LoginRequestDto.java
@@ -85,6 +82,8 @@ team5-backend/
 |   |   |   |       |   `-- UserRepository.java
 |   |   |   |       `-- service/
 |   |   |   |           `-- AuthService.java
+|   |   |   |-- entity/
+|   |   |   |   `-- ChatMessage.java
 |   |   |   `-- global/
 |   |   |       |-- common/
 |   |   |       |   `-- BaseEntity.java
