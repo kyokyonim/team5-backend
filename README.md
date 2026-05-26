@@ -55,6 +55,57 @@
 
 ---
 
+## 📁 프로젝트 구조 (Project Structure)
+컨트롤러는 공통 진입점으로 `controller`에 두고, 도메인별 비즈니스 코드는 `domain/{도메인명}` 아래에서 관리합니다.
+팀원들은 최신 `dev` 브랜치를 pull 받아 아래 폴더 구조를 그대로 유지하면서 작업합니다.
+
+```text
+team5-backend/
+|-- src/
+|   |-- main/
+|   |   |-- java/com/team5/web_ide/
+|   |   |   |-- WebIdeApplication.java
+|   |   |   |-- config/
+|   |   |   |   `-- SecurityConfig.java
+|   |   |   |-- controller/
+|   |   |   |   |-- AuthController.java
+|   |   |   |   `-- TestController.java
+|   |   |   |-- domain/
+|   |   |   |   |-- chat/
+|   |   |   |   |   `-- entity/
+|   |   |   |   |       `-- ChatMessage.java
+|   |   |   |   `-- user/
+|   |   |   |       |-- dto/
+|   |   |   |       |   |-- LoginRequestDto.java
+|   |   |   |       |   |-- LoginResponseDto.java
+|   |   |   |       |   `-- SignupRequestDto.java
+|   |   |   |       |-- entity/
+|   |   |   |       |   `-- User.java
+|   |   |   |       |-- repository/
+|   |   |   |       |   `-- UserRepository.java
+|   |   |   |       `-- service/
+|   |   |   |           `-- AuthService.java
+|   |   |   `-- global/
+|   |   |       |-- common/
+|   |   |       |   `-- BaseEntity.java
+|   |   |       |-- response/
+|   |   |       |   `-- ApiResponse.java
+|   |   |       `-- security/
+|   |   |           `-- JwtUtil.java
+|   |   `-- resources/
+|   |       `-- application.properties
+|   `-- test/
+|       `-- java/com/team5/web_ide/
+|           `-- WebIdeApplicationTests.java
+|-- build.gradle
+|-- settings.gradle
+`-- gradlew
+```
+
+새 도메인이 추가되면 `domain/project`, `domain/file`, `domain/comment`처럼 `domain` 아래에 도메인별 하위 폴더를 추가합니다.
+
+---
+
 ## 📅 타임라인 (1 Weeks Sprint)
 1주 안에 코어 기능 완성을 목표로 달리는 미친 스케줄 ⏱️
 
