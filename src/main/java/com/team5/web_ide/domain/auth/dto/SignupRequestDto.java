@@ -1,4 +1,4 @@
-package com.team5.web_ide.domain.user.dto;
+package com.team5.web_ide.domain.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
