@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "team5-chat-mvp",
+    "_postman_id": "3f2ca778-c8d7-4ec2-b4fd-70826abfca50",
+    "description": "Chat MVP REST checks for message list API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "CHAT-01 Latest Messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/chats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "chats"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('success is true', function () {",
+              "  pm.expect(body.success).to.eql(true);",
+              "});",
+              "pm.test('data shape exists', function () {",
+              "  pm.expect(body.data).to.have.property('messages');",
+              "  pm.expect(body.data).to.have.property('hasMore');",
+              "  pm.expect(body.data).to.have.property('nextCursor');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CHAT-01 Cursor Messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/chats?size={{size}}&before={{beforeCursor}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "chats"],
+          "query": [
+            { "key": "size", "value": "{{size}}" },
+            { "key": "before", "value": "{{beforeCursor}}" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('success is true', function () {",
+              "  pm.expect(body.success).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CHAT-01 Size Clamp Check (>100)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/chats?size=9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "chats"],
+          "query": [
+            { "key": "size", "value": "9999" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('messages length <= 100', function () {",
+              "  pm.expect(body.data.messages.length).to.be.at.most(100);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CHAT-01 Invalid Cursor (before=0)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects/{{projectId}}/chats?before=0",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "projects", "{{projectId}}", "chats"],
+          "query": [
+            { "key": "before", "value": "0" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('Error code is CHAT_INVALID_CURSOR', function () {",
+              "  pm.expect(body.code).to.eql('CHAT_INVALID_CURSOR');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
