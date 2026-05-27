@@ -1,31 +1,53 @@
 package com.team5.web_ide.domain.chat.entity;
-import com.team5.web_ide.domain.user.entity.User;
 
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
-@Table(name="chat_messages")
+@AllArgsConstructor
+@Table(
+        name = "chat_messages",
+        indexes = {
+                @Index(name = "idx_chat_project_id", columnList = "project_id"),
+                @Index(name = "idx_chat_project_created", columnList = "project_id, id")
+        }
+)
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String message;
-    // 채팅 내역에 몇 시에 보냈는지 확인하기 위해서
-    private LocalDateTime timestamp;
-    @ManyToOne
-    @JoinColumn(name="sender_id",nullable = false)
-    private User sender;
+    @Column(name = "project_id", nullable = false)
+    private Long projectId;
 
+    @Column(name = "sender_id", nullable = false)
+    private Long senderId;
 
+    @Column(name = "sender_nickname", nullable = false, length = 6)
+    private String senderNickname;
+
+    @Column(name = "sender_profile_color", nullable = false, length = 7)
+    private String senderProfileColor;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }
