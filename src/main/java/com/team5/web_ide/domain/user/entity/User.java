@@ -79,4 +79,11 @@ public class User extends BaseEntity {
     public enum Status {
         ACTIVE, DELETED, BANNED
     }
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateProfileColor(String profileColor) {
+        this.profileColor = profileColor;
+    }
 }
