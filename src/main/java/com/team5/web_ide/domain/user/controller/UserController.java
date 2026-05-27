@@ -7,6 +7,7 @@ import com.team5.web_ide.domain.user.service.UserService;
 import com.team5.web_ide.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,7 +22,8 @@ public class UserController {
 
     // 내 정보 조회
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<?>> getMyInfo(@RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<?>> getMyInfo(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다"));
 
@@ -47,8 +49,9 @@ public class UserController {
     // 프로필 수정
     @PatchMapping("/me/profile")
     public ResponseEntity<ApiResponse<?>> updateProfile(
-            @RequestParam Long userId,
+            Authentication authentication,
             @RequestBody UpdateProfileRequestDto dto) {
+        Long userId = (Long) authentication.getPrincipal();
         User user = userService.updateProfile(userId, dto);
         return ResponseEntity.ok(ApiResponse.success("프로필 수정 성공",
                 Map.of(
