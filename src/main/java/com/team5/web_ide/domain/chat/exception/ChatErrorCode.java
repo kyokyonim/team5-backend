@@ -6,10 +6,11 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum ChatErrorCode implements ErrorCode {
-    PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "존재하지 않는 프로젝트입니다.", HttpStatus.NOT_FOUND),
-    CHAT_CONTENT_EMPTY("CHAT_CONTENT_EMPTY", "메시지 내용은 필수입니다.", HttpStatus.BAD_REQUEST),
-    CHAT_CONTENT_TOO_LONG("CHAT_CONTENT_TOO_LONG", "메시지는 2,000자를 초과할 수 없습니다.", HttpStatus.BAD_REQUEST),
-    CHAT_INVALID_CURSOR("CHAT_INVALID_CURSOR", "before는 1 이상의 값이어야 합니다.", HttpStatus.BAD_REQUEST);
+    PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "Project not found.", HttpStatus.NOT_FOUND),
+    USER_NOT_FOUND("USER_NOT_FOUND", "User not found.", HttpStatus.NOT_FOUND),
+    CHAT_CONTENT_EMPTY("CHAT_CONTENT_EMPTY", "Message content is required.", HttpStatus.BAD_REQUEST),
+    CHAT_CONTENT_TOO_LONG("CHAT_CONTENT_TOO_LONG", "Message must be 2000 characters or fewer.", HttpStatus.BAD_REQUEST),
+    CHAT_INVALID_CURSOR("CHAT_INVALID_CURSOR", "before must be greater than 0.", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;
