@@ -15,9 +15,9 @@
 ## 🔗 우리들의 보물창고 (Docs & Links)
 기획부터 디자인, API 명세까지! 우리 프로젝트의 모든 뼈대가 담긴 생생한 문서들입니다.
 
-* 📝 **[메인 Notion / API 1](https://www.notion.so/API-1-bd5d3570df81836f81fc81d60d05dca5)**
-* 🗄️ **[도메인 설계 / ERD](https://www.notion.so/32bd3570df81824b94cf81a3d7f9d6d0)**
-* 🔌 **[API 설계서](https://www.notion.so/36b044633ac18134afe7fcf477b75562)**
+* 📝 **[메인 Notion / API ](https://secret-snarl-bb0.notion.site/API-36bd3570df8180d887ddc016755677c4)**
+* 🗄️ **[도메인 설계 / ERD](https://secret-snarl-bb0.notion.site/36bd3570df818094b252d9a00fe5acbc)**
+* 🔌 **[API 설계서](https://secret-snarl-bb0.notion.site/API-36bd3570df818005bef4ff65e37064e3)**
 * 🎨 **[Figma (화면 설계)](https://www.figma.com/design/uJerc6vqBIaH3ZIxUoa5l2/WebIDE?node-id=136-1084&p=f&t=YFJNCiRACj1VGtIH-0)**
 * 📑 **[프로젝트 기획서](https://www.notion.so/WEB-IDE-35b8294ef2a88063b7e0e4b226d94c2f)**
 
