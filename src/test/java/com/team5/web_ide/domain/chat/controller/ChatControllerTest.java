@@ -6,6 +6,11 @@ import com.team5.web_ide.domain.chat.exception.ChatErrorCode;
 import com.team5.web_ide.domain.chat.exception.ChatException;
 import com.team5.web_ide.domain.chat.service.ChatService;
 import com.team5.web_ide.global.exception.GlobalExceptionHandler;
+import com.team5.web_ide.global.security.JwtAuthenticationFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -94,6 +100,20 @@ class ChatControllerTest {
                     .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
             return http.build();
+        }
+
+        @Bean
+        JwtAuthenticationFilter jwtAuthenticationFilter() {
+            return new JwtAuthenticationFilter(null) {
+                @Override
+                protected void doFilterInternal(
+                        HttpServletRequest request,
+                        HttpServletResponse response,
+                        FilterChain filterChain
+                ) throws ServletException, IOException {
+                    filterChain.doFilter(request, response);
+                }
+            };
         }
     }
 }
