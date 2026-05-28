@@ -7,7 +7,10 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -32,10 +35,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             }
 
             Long userId = jwtUtil.getUserId(token);
-
-            if (accessor.getSessionAttributes() != null) {
-                accessor.getSessionAttributes().put("userId", userId);
-            }
+            accessor.setUser(new UsernamePasswordAuthenticationToken(userId, null, List.of()));
         }
 
         return message;

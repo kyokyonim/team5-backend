@@ -14,12 +14,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,18 +45,19 @@ public class ChatController {
     public void sendMessage(
             @DestinationVariable Long projectId,
             @Payload ChatMessageSendRequest request,
-            SimpMessageHeaderAccessor headerAccessor
+            Principal principal
     ) {
-        Long userId = extractUserId(headerAccessor);
+        Long userId = extractUserId(principal);
         ChatMessageResponse response = chatService.sendMessage(projectId, userId, request);
         messagingTemplate.convertAndSend("/topic/projects/" + projectId + "/chat", response);
     }
 
-    private Long extractUserId(SimpMessageHeaderAccessor headerAccessor) {
-        Object userId = headerAccessor.getSessionAttributes() == null
-                ? null
-                : headerAccessor.getSessionAttributes().get("userId");
+    private Long extractUserId(Principal principal) {
+        if (!(principal instanceof Authentication authentication)) {
+            throw new IllegalArgumentException("Unauthorized websocket session.");
+        }
 
+        Object userId = authentication.getPrincipal();
         if (userId instanceof Long longUserId) {
             return longUserId;
         }
