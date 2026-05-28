@@ -4,12 +4,16 @@ import com.team5.web_ide.domain.chat.dto.ChatMessageListResponse;
 import com.team5.web_ide.domain.chat.dto.ChatMessageResponse;
 import com.team5.web_ide.domain.chat.dto.ChatMessageSendRequest;
 import com.team5.web_ide.domain.chat.service.ChatService;
+import com.team5.web_ide.global.exception.ApiException;
+import com.team5.web_ide.global.exception.GlobalErrorCode;
 import com.team5.web_ide.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,5 +61,26 @@ public class ChatController {
             return intUserId.longValue();
         }
         throw new IllegalArgumentException("Unauthorized websocket session.");
+    }
+
+    @MessageExceptionHandler(ApiException.class)
+    @SendToUser("/queue/errors")
+    public ApiResponse<Void> handleWsApiException(ApiException ex) {
+        return ApiResponse.fail(ex.getErrorCode().code(), ex.getErrorCode().message());
+    }
+
+    @MessageExceptionHandler(IllegalArgumentException.class)
+    @SendToUser("/queue/errors")
+    public ApiResponse<Void> handleWsIllegalArgumentException(IllegalArgumentException ex) {
+        return ApiResponse.fail(GlobalErrorCode.BAD_REQUEST.code(), ex.getMessage());
+    }
+
+    @MessageExceptionHandler(Exception.class)
+    @SendToUser("/queue/errors")
+    public ApiResponse<Void> handleWsException(Exception ex) {
+        return ApiResponse.fail(
+                GlobalErrorCode.INTERNAL_SERVER_ERROR.code(),
+                GlobalErrorCode.INTERNAL_SERVER_ERROR.message()
+        );
     }
 }
