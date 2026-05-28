@@ -24,7 +24,7 @@
 ---
 
 ## ✨ 핵심 기능 (Core Features)
-* **초스피드 셋업:** 이메일 & 구글 소셜 로그인으로 가입하고 바로 프로젝트 생성!
+* **초스피드 셋업:** 이메일 로그인으로 가입하고 바로 프로젝트 생성!
 * **실시간 협업 끝판왕:** 코드 라인에 직접 남기는 댓글과 WebSocket 기반 실시간 채팅으로 피드백 속도 UP ⚡
 * **동시 수정 대참사 방어 (Lock):** 내가 파일 수정 중일 땐 철벽 방어! 덮어쓰기 충돌을 막아주는 똑똑한 동시성 제어.
 * **IDE 본질에 충실:** 파일 트리, 폴더/파일 CRUD, Monaco Editor 기반의 깔끔한 코드 조회 및 저장.
@@ -36,8 +36,8 @@
 
 | 담당자 | 담당 도메인 (Domain) | 내가 책임지는 기능들 🛠️ |
 | :--- | :--- | :--- |
-| **김다은** | Auth / User / Profile | 회원가입, 로그인(JWT), 구글 소셜 로그인, 내 정보/프로필 관리 |
-| **정윤서** | Project / Member / Comment / Chat(활성 사용자) | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리, 접속자 상태 표시, 댓글 |
+| **김다은** | Auth / User / Profile | 회원가입, 로그인(JWT), 내 정보/프로필 관리 |
+| **정윤서** | Project / Member / Comment / Presence(활성 사용자) | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리, 접속자 상태 표시, 댓글 |
 | **최희원** | IDE / File | Monaco Editor 연결, 파일 트리, 파일/폴더 CRUD, 코드 저장 및 파일 잠금(Lock) |
 | **조아영** | Chat / Presence / Admin / Log | 실시간 채팅(WebSocket),  관리자 기능, 활동 로그 |
 
