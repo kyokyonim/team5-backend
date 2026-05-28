@@ -1,0 +1,147 @@
+package com.team5.web_ide.domain.chat.service;
+
+import com.team5.web_ide.domain.chat.dto.ChatMessageListResponse;
+import com.team5.web_ide.domain.chat.dto.ChatMessageSendRequest;
+import com.team5.web_ide.domain.chat.entity.ChatMessage;
+import com.team5.web_ide.domain.chat.exception.ChatErrorCode;
+import com.team5.web_ide.domain.chat.exception.ChatException;
+import com.team5.web_ide.domain.chat.repository.ChatMessageRepository;
+import com.team5.web_ide.domain.user.entity.User;
+import com.team5.web_ide.domain.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class ChatServiceTest {
+
+    @Mock
+    private ChatMessageRepository chatMessageRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private ChatService chatService;
+
+    @Test
+    @DisplayName("before가 0 이하이면 CHAT_INVALID_CURSOR 예외를 던진다")
+    void getMessages_invalidBefore_throwsException() {
+        assertThatThrownBy(() -> chatService.getMessages(1L, 50, 0L))
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.CHAT_INVALID_CURSOR);
+    }
+
+    @Test
+    @DisplayName("size+1 조회 결과로 hasMore와 nextCursor를 계산한다")
+    void getMessages_cursorPagination_works() {
+        List<ChatMessage> rows = List.of(
+                message(105L, "m1"),
+                message(104L, "m2"),
+                message(103L, "m3")
+        );
+        when(chatMessageRepository.findByProjectIdOrderByIdDesc(eq(1L), any()))
+                .thenReturn(rows);
+
+        ChatMessageListResponse result = chatService.getMessages(1L, 2, null);
+
+        assertThat(result.isHasMore()).isTrue();
+        assertThat(result.getNextCursor()).isEqualTo(104L);
+        assertThat(result.getMessages()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("공백 메시지는 CHAT_CONTENT_EMPTY 예외를 던진다")
+    void sendMessage_blankContent_throwsException() {
+        ChatMessageSendRequest request = sendRequest("   ");
+
+        assertThatThrownBy(() -> chatService.sendMessage(1L, 1L, request))
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.CHAT_CONTENT_EMPTY);
+    }
+
+    @Test
+    @DisplayName("2000자를 초과하면 CHAT_CONTENT_TOO_LONG 예외를 던진다")
+    void sendMessage_tooLong_throwsException() {
+        ChatMessageSendRequest request = sendRequest("a".repeat(2001));
+
+        assertThatThrownBy(() -> chatService.sendMessage(1L, 1L, request))
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.CHAT_CONTENT_TOO_LONG);
+    }
+
+    @Test
+    @DisplayName("메시지는 원문 그대로 저장하고 발신자 스냅샷을 채운다")
+    void sendMessage_persistsRawContentAndSnapshot() {
+        ChatMessageSendRequest request = sendRequest("  raw content  ");
+        User sender = User.builder()
+                .id(1L)
+                .email("chat1@test.com")
+                .nickname("kimda")
+                .provider(User.Provider.LOCAL)
+                .profileColor("#FF5733")
+                .agreeService(true)
+                .agreeFinance(true)
+                .build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
+        when(chatMessageRepository.save(any(ChatMessage.class)))
+                .thenAnswer(invocation -> {
+                    ChatMessage arg = invocation.getArgument(0);
+                    return ChatMessage.builder()
+                            .id(200L)
+                            .projectId(arg.getProjectId())
+                            .senderId(arg.getSenderId())
+                            .senderNickname(arg.getSenderNickname())
+                            .senderProfileColor(arg.getSenderProfileColor())
+                            .content(arg.getContent())
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                });
+
+        chatService.sendMessage(1L, 1L, request);
+
+        ArgumentCaptor<ChatMessage> captor = ArgumentCaptor.forClass(ChatMessage.class);
+        verify(chatMessageRepository).save(captor.capture());
+        ChatMessage saved = captor.getValue();
+        assertThat(saved.getContent()).isEqualTo("  raw content  ");
+        assertThat(saved.getSenderNickname()).isEqualTo("kimda");
+        assertThat(saved.getSenderProfileColor()).isEqualTo("#FF5733");
+    }
+
+    private ChatMessageSendRequest sendRequest(String content) {
+        ChatMessageSendRequest request = new ChatMessageSendRequest();
+        ReflectionTestUtils.setField(request, "content", content);
+        return request;
+    }
+
+    private ChatMessage message(Long id, String content) {
+        return ChatMessage.builder()
+                .id(id)
+                .projectId(1L)
+                .senderId(1L)
+                .senderNickname("kimda")
+                .senderProfileColor("#FF5733")
+                .content(content)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+}
