@@ -12,7 +12,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatController {
 
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     public ApiResponse<ChatMessageListResponse> getMessages(
@@ -39,14 +40,14 @@ public class ChatController {
     }
 
     @MessageMapping("/projects/{projectId}/chat")
-    @SendTo("/topic/projects/{projectId}/chat")
-    public ChatMessageResponse sendMessage(
+    public void sendMessage(
             @DestinationVariable Long projectId,
             @Payload ChatMessageSendRequest request,
             SimpMessageHeaderAccessor headerAccessor
     ) {
         Long userId = extractUserId(headerAccessor);
-        return chatService.sendMessage(projectId, userId, request);
+        ChatMessageResponse response = chatService.sendMessage(projectId, userId, request);
+        messagingTemplate.convertAndSend("/topic/projects/" + projectId + "/chat", response);
     }
 
     private Long extractUserId(SimpMessageHeaderAccessor headerAccessor) {
