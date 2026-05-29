@@ -1,15 +1,17 @@
 package com.team5.web_ide.domain.presence.controller;
 
 import com.team5.web_ide.domain.presence.dto.PresenceResponse;
-import com.team5.web_ide.domain.presence.dto.PresenceUpdateRequest;
+import com.team5.web_ide.domain.presence.exception.PresenceErrorCode;
+import com.team5.web_ide.domain.presence.exception.PresenceException;
 import com.team5.web_ide.domain.presence.service.PresenceService;
 import com.team5.web_ide.global.response.ApiResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/presence")
@@ -19,35 +21,28 @@ public class PresenceController {
     private final PresenceService presenceService;
 
     @PutMapping
-    public ResponseEntity<ApiResponse<PresenceResponse>> updatePresence(
+    public ResponseEntity<ApiResponse<PresenceResponse>> activateCurrentUser(
             @PathVariable Long projectId,
-            @Valid @RequestBody PresenceUpdateRequest request
+            Authentication authentication
     ) {
+        Long userId = getCurrentUserId(authentication);
+
         return ResponseEntity.ok(ApiResponse.success(
-                "접속 상태가 갱신되었습니다.",
-                presenceService.updatePresence(projectId, request)
+                "현재 사용자가 활성 상태로 갱신되었습니다.",
+                presenceService.activateCurrentUser(projectId, userId)
         ));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<PresenceResponse>>> getOnlinePresence(
-            @PathVariable Long projectId,
-            @RequestParam(required = false) Long requesterId
-    ) {
-        return ResponseEntity.ok(ApiResponse.success(
-                "접속자 목록 조회 성공",
-                presenceService.getOnlinePresence(projectId, requesterId)
-        ));
-    }
+    private Long getCurrentUserId(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new PresenceException(PresenceErrorCode.PRESENCE_UNAUTHORIZED);
+        }
 
-    @DeleteMapping
-    public ResponseEntity<ApiResponse<PresenceResponse>> markOffline(
-            @PathVariable Long projectId,
-            @RequestParam(required = false) Long userId
-    ) {
-        return ResponseEntity.ok(ApiResponse.success(
-                "접속 상태가 오프라인으로 변경되었습니다.",
-                presenceService.markOffline(projectId, userId)
-        ));
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof Long userId)) {
+            throw new PresenceException(PresenceErrorCode.PRESENCE_UNAUTHORIZED);
+        }
+
+        return userId;
     }
 }

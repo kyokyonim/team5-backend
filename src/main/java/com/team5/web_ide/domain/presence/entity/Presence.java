@@ -3,7 +3,16 @@ package com.team5.web_ide.domain.presence.entity;
 import com.team5.web_ide.domain.project.entity.Project;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.global.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,43 +46,17 @@ public class Presence extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PresenceStatus status = PresenceStatus.ONLINE;
-
-    @Column(length = 1000)
-    private String currentFilePath;
-
-    private Integer cursorLine;
-
-    private Integer cursorColumn;
-
     @Column(nullable = false)
     private LocalDateTime lastSeenAt;
 
     @Builder
-    public Presence(Project project, User user, PresenceStatus status, String currentFilePath, Integer cursorLine, Integer cursorColumn) {
+    public Presence(Project project, User user) {
         this.project = project;
         this.user = user;
-        update(status, currentFilePath, cursorLine, cursorColumn);
+        activate();
     }
 
-    public void update(PresenceStatus status, String currentFilePath, Integer cursorLine, Integer cursorColumn) {
-        this.status = status == null ? PresenceStatus.ONLINE : status;
-        this.currentFilePath = currentFilePath;
-        this.cursorLine = cursorLine;
-        this.cursorColumn = cursorColumn;
+    public void activate() {
         this.lastSeenAt = LocalDateTime.now();
-    }
-
-    public void markOffline() {
-        this.status = PresenceStatus.OFFLINE;
-        this.lastSeenAt = LocalDateTime.now();
-    }
-
-    public enum PresenceStatus {
-        ONLINE,
-        AWAY,
-        OFFLINE
     }
 }

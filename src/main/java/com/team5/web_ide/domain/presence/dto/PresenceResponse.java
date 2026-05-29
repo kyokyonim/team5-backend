@@ -10,15 +10,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PresenceResponse {
 
-    private Long id;
+    private Long presenceId;
     private Long projectId;
     private Long userId;
     private String nickname;
     private String profileColor;
-    private Presence.PresenceStatus status;
-    private String currentFilePath;
-    private Integer cursorLine;
-    private Integer cursorColumn;
     private LocalDateTime lastSeenAt;
 
     public static PresenceResponse from(Presence presence) {
@@ -28,10 +24,6 @@ public class PresenceResponse {
                 presence.getUser().getId(),
                 presence.getUser().getNickname(),
                 presence.getUser().getProfileColor(),
-                presence.getStatus(),
-                presence.getCurrentFilePath(),
-                presence.getCursorLine(),
-                presence.getCursorColumn(),
                 presence.getLastSeenAt()
         );
     }
