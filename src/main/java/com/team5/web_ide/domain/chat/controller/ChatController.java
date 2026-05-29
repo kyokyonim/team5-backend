@@ -54,7 +54,7 @@ public class ChatController {
 
     private Long extractUserId(Principal principal) {
         if (!(principal instanceof Authentication authentication)) {
-            throw new ApiException(GlobalErrorCode.UNAUTHORIZED);
+            throw new ApiException(GlobalErrorCode.AUTH_UNAUTHORIZED);
         }
 
         Object userId = authentication.getPrincipal();
@@ -64,27 +64,27 @@ public class ChatController {
         if (userId instanceof Integer intUserId) {
             return intUserId.longValue();
         }
-        throw new ApiException(GlobalErrorCode.UNAUTHORIZED);
+        throw new ApiException(GlobalErrorCode.AUTH_UNAUTHORIZED);
     }
 
     @MessageExceptionHandler(ApiException.class)
     @SendToUser("/queue/errors")
     public ApiResponse<Void> handleWsApiException(ApiException ex) {
-        return ApiResponse.fail(ex.getErrorCode().code(), ex.getErrorCode().message());
+        return ApiResponse.fail(ex.getErrorCode().getCode(), ex.getErrorCode().getMessage());
     }
 
     @MessageExceptionHandler(IllegalArgumentException.class)
     @SendToUser("/queue/errors")
     public ApiResponse<Void> handleWsIllegalArgumentException(IllegalArgumentException ex) {
-        return ApiResponse.fail(GlobalErrorCode.BAD_REQUEST.code(), ex.getMessage());
+        return ApiResponse.fail(GlobalErrorCode.VALIDATION_ERROR.getCode(), ex.getMessage());
     }
 
     @MessageExceptionHandler(Exception.class)
     @SendToUser("/queue/errors")
     public ApiResponse<Void> handleWsException(Exception ex) {
         return ApiResponse.fail(
-                GlobalErrorCode.INTERNAL_SERVER_ERROR.code(),
-                GlobalErrorCode.INTERNAL_SERVER_ERROR.message()
+                GlobalErrorCode.INTERNAL_SERVER_ERROR.getCode(),
+                GlobalErrorCode.INTERNAL_SERVER_ERROR.getMessage()
         );
     }
 }
