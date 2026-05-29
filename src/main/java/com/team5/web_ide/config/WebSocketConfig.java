@@ -1,5 +1,6 @@
 package com.team5.web_ide.config;
 
+import com.team5.web_ide.domain.chat.security.ChatSubscribeAuthorizationInterceptor;
 import com.team5.web_ide.global.security.JwtChannelInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final long HEARTBEAT_INTERVAL_MS = 10_000L;
 
     private final JwtChannelInterceptor jwtChannelInterceptor;
+    private final ChatSubscribeAuthorizationInterceptor chatSubscribeAuthorizationInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -38,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(jwtChannelInterceptor);
+        registration.interceptors(jwtChannelInterceptor, chatSubscribeAuthorizationInterceptor);
     }
 
     @Bean

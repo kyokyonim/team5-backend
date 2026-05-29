@@ -2,6 +2,10 @@ package com.team5.web_ide.domain.chat.controller;
 
 import com.team5.web_ide.domain.chat.entity.ChatMessage;
 import com.team5.web_ide.domain.chat.repository.ChatMessageRepository;
+import com.team5.web_ide.domain.member.entity.ProjectMember;
+import com.team5.web_ide.domain.member.repository.ProjectMemberRepository;
+import com.team5.web_ide.domain.project.entity.Project;
+import com.team5.web_ide.domain.project.repository.ProjectRepository;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
 import com.team5.web_ide.global.security.JwtUtil;
@@ -53,11 +57,20 @@ class ChatWebSocketIntegrationTest {
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
+
     private User sender;
+    private Project project;
 
     @BeforeEach
     void setUp() {
         chatMessageRepository.deleteAll();
+        projectMemberRepository.deleteAll();
+        projectRepository.deleteAll();
         userRepository.deleteAll();
 
         sender = userRepository.save(User.builder()
@@ -68,6 +81,18 @@ class ChatWebSocketIntegrationTest {
                 .profileColor("#FF5733")
                 .agreeService(true)
                 .agreeFinance(true)
+                .build());
+
+        project = projectRepository.save(Project.builder()
+                .projectName("chat project")
+                .language(Project.Language.JAVA)
+                .owner(sender)
+                .build());
+
+        projectMemberRepository.save(ProjectMember.builder()
+                .project(project)
+                .user(sender)
+                .role(ProjectMember.ProjectRole.EDITOR)
                 .build());
     }
 
@@ -96,7 +121,7 @@ class ChatWebSocketIntegrationTest {
         CompletableFuture<Map<String, Object>> chatReceived = new CompletableFuture<>();
         CompletableFuture<Object> errorReceived = new CompletableFuture<>();
 
-        session.subscribe("/topic/projects/1/chat", new StompFrameHandler() {
+        session.subscribe("/topic/projects/" + project.getId() + "/chat", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return Map.class;
@@ -123,7 +148,7 @@ class ChatWebSocketIntegrationTest {
 
         TimeUnit.MILLISECONDS.sleep(300);
 
-        session.send("/app/projects/1/chat", Map.of("content", "hello websocket"));
+        session.send("/app/projects/" + project.getId() + "/chat", Map.of("content", "hello websocket"));
 
         Object firstFrame = CompletableFuture.anyOf(chatReceived, errorReceived).get(5, TimeUnit.SECONDS);
         assertThat(firstFrame)
@@ -138,7 +163,7 @@ class ChatWebSocketIntegrationTest {
         assertThat(response.get("content")).isEqualTo("hello websocket");
 
         List<ChatMessage> savedMessages = chatMessageRepository.findByProjectIdOrderByIdDesc(
-                1L,
+                project.getId(),
                 org.springframework.data.domain.PageRequest.of(0, 10)
         );
         assertThat(savedMessages).hasSize(1);

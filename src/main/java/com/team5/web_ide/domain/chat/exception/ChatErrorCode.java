@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ChatErrorCode implements ErrorCode {
-    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found."),
     CHAT_CONTENT_EMPTY(HttpStatus.BAD_REQUEST, "CHAT_CONTENT_EMPTY", "Message content is required."),
     CHAT_CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "CHAT_CONTENT_TOO_LONG", "Message must be 2000 characters or fewer."),

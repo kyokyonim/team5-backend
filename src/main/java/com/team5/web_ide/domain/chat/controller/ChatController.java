@@ -35,9 +35,11 @@ public class ChatController {
     public ApiResponse<ChatMessageListResponse> getMessages(
             @PathVariable Long projectId,
             @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) Long before
+            @RequestParam(required = false) Long before,
+            Authentication authentication
     ) {
-        ChatMessageListResponse response = chatService.getMessages(projectId, size, before);
+        Long userId = extractUserId(authentication);
+        ChatMessageListResponse response = chatService.getMessages(projectId, userId, size, before);
         return ApiResponse.success("Chat messages retrieved successfully.", response);
     }
 

@@ -7,6 +7,10 @@ import com.team5.web_ide.domain.chat.entity.ChatMessage;
 import com.team5.web_ide.domain.chat.exception.ChatErrorCode;
 import com.team5.web_ide.domain.chat.exception.ChatException;
 import com.team5.web_ide.domain.chat.repository.ChatMessageRepository;
+import com.team5.web_ide.domain.member.entity.ProjectMember;
+import com.team5.web_ide.domain.project.exception.ProjectErrorCode;
+import com.team5.web_ide.domain.project.exception.ProjectException;
+import com.team5.web_ide.domain.project.service.ProjectService;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +28,16 @@ public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+    private final ProjectService projectService;
 
     @Transactional
     public ChatMessageResponse sendMessage(Long projectId, Long senderId, ChatMessageSendRequest request) {
+        projectService.findActiveProject(projectId);
+        ProjectMember member = projectService.validateProjectMember(projectId, senderId);
+        if (member.getRole() == ProjectMember.ProjectRole.VIEWER) {
+            throw new ProjectException(ProjectErrorCode.PROJECT_ACCESS_DENIED);
+        }
+
         String content = normalizeContent(request.getContent());
 
         User sender = userRepository.findById(senderId)
@@ -45,7 +56,10 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public ChatMessageListResponse getMessages(Long projectId, Integer size, Long before) {
+    public ChatMessageListResponse getMessages(Long projectId, Long requesterId, Integer size, Long before) {
+        projectService.findActiveProject(projectId);
+        projectService.validateProjectMember(projectId, requesterId);
+
         int normalizedSize = normalizeSize(size);
 
         if (before != null && before <= 0L) {

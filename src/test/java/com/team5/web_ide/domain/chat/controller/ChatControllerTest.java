@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,10 +68,11 @@ class ChatControllerTest {
                 .hasMore(false)
                 .nextCursor(null)
                 .build();
-        when(chatService.getMessages(eq(1L), eq(50), eq(null))).thenReturn(payload);
+        when(chatService.getMessages(eq(1L), eq(1L), eq(50), eq(null))).thenReturn(payload);
 
         mockMvc.perform(get("/api/projects/1/chats")
-                        .param("size", "50"))
+                        .param("size", "50")
+                        .with(authentication(new UsernamePasswordAuthenticationToken(1L, null, List.of()))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.messages[0].id").value(1))
@@ -79,12 +82,13 @@ class ChatControllerTest {
     @Test
     @DisplayName("채팅 조회 API는 커서 오류를 400으로 반환한다")
     void getMessages_invalidCursor_returns400() throws Exception {
-        when(chatService.getMessages(eq(1L), eq(50), eq(0L)))
+        when(chatService.getMessages(eq(1L), eq(1L), eq(50), eq(0L)))
                 .thenThrow(new ChatException(ChatErrorCode.CHAT_INVALID_CURSOR));
 
         mockMvc.perform(get("/api/projects/1/chats")
                         .param("size", "50")
-                        .param("before", "0"))
+                        .param("before", "0")
+                        .with(authentication(new UsernamePasswordAuthenticationToken(1L, null, List.of()))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value("CHAT_INVALID_CURSOR"));
