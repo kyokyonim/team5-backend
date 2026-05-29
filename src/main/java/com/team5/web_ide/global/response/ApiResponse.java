@@ -1,5 +1,6 @@
 package com.team5.web_ide.global.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private boolean success;
@@ -34,13 +36,23 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    // 실패 응답
+    // 실패 응답 (데이터 없음)
     public static <T> ApiResponse<T> fail(String code, String message) {
         return ApiResponse.<T>builder()
                 .success(false)
                 .code(code)
                 .message(message)
                 .data(null)
+                .build();
+    }
+
+    // 실패 응답 (데이터 있음)
+     public static <T> ApiResponse<T> fail(String code, String message, T data) {
+        return ApiResponse.<T>builder()
+                .success(false)
+                .code(code)
+                .message(message)
+                .data(data)
                 .build();
     }
 }
