@@ -8,20 +8,20 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Optional<Comment> findByIdAndProjectIdAndStatus(
+    Optional<Comment> findByIdAndProjectIdAndFileIdAndDeletedAtIsNull(
             Long id,
             Long projectId,
-            Comment.CommentStatus status
+            Long fileId
     );
 
-    List<Comment> findAllByProjectIdAndStatusOrderByCreatedAtAsc(
+    List<Comment> findAllByProjectIdAndFileIdAndDeletedAtIsNullOrderByLineNumberAscCreatedAtAsc(
             Long projectId,
-            Comment.CommentStatus status
+            Long fileId
     );
 
-    List<Comment> findAllByProjectIdAndFilePathAndStatusOrderByCreatedAtAsc(
+    List<Comment> findAllByProjectIdAndFileIdAndResolvedAndDeletedAtIsNullOrderByLineNumberAscCreatedAtAsc(
             Long projectId,
-            String filePath,
-            Comment.CommentStatus status
+            Long fileId,
+            boolean resolved
     );
 }

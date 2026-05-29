@@ -10,14 +10,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentResponse {
 
-    private Long id;
+    private Long commentId;
     private Long projectId;
-    private Long writerId;
-    private String writerNickname;
-    private String writerProfileColor;
-    private String filePath;
+    private Long fileId;
+    private Long userId;
+    private String nickname;
+    private String profileColor;
     private Integer lineNumber;
     private String content;
+    private boolean resolved;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -25,12 +26,13 @@ public class CommentResponse {
         return new CommentResponse(
                 comment.getId(),
                 comment.getProject().getId(),
+                comment.getFileId(),
                 comment.getWriter().getId(),
                 comment.getWriter().getNickname(),
                 comment.getWriter().getProfileColor(),
-                comment.getFilePath(),
                 comment.getLineNumber(),
                 comment.getContent(),
+                comment.isResolved(),
                 comment.getCreatedAt(),
                 comment.getUpdatedAt()
         );
