@@ -54,7 +54,7 @@ public class ChatController {
 
     private Long extractUserId(Principal principal) {
         if (!(principal instanceof Authentication authentication)) {
-            throw new IllegalArgumentException("Unauthorized websocket session.");
+            throw new ApiException(GlobalErrorCode.UNAUTHORIZED);
         }
 
         Object userId = authentication.getPrincipal();
@@ -64,7 +64,7 @@ public class ChatController {
         if (userId instanceof Integer intUserId) {
             return intUserId.longValue();
         }
-        throw new IllegalArgumentException("Unauthorized websocket session.");
+        throw new ApiException(GlobalErrorCode.UNAUTHORIZED);
     }
 
     @MessageExceptionHandler(ApiException.class)
