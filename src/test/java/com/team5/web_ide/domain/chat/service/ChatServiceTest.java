@@ -79,6 +79,17 @@ class ChatServiceTest {
     }
 
     @Test
+    @DisplayName("null 메시지는 CHAT_CONTENT_EMPTY 예외를 던진다")
+    void sendMessage_nullContent_throwsException() {
+        ChatMessageSendRequest request = sendRequest(null);
+
+        assertThatThrownBy(() -> chatService.sendMessage(1L, 1L, request))
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.CHAT_CONTENT_EMPTY);
+    }
+
+    @Test
     @DisplayName("2000자를 초과하면 CHAT_CONTENT_TOO_LONG 예외를 던진다")
     void sendMessage_tooLong_throwsException() {
         ChatMessageSendRequest request = sendRequest("a".repeat(2001));
@@ -90,8 +101,8 @@ class ChatServiceTest {
     }
 
     @Test
-    @DisplayName("메시지는 원문 그대로 저장하고 발신자 스냅샷을 채운다")
-    void sendMessage_persistsRawContentAndSnapshot() {
+    @DisplayName("메시지는 앞뒤 공백을 제거해 저장하고 발신자 스냅샷을 채운다")
+    void sendMessage_persistsTrimmedContentAndSnapshot() {
         ChatMessageSendRequest request = sendRequest("  raw content  ");
         User sender = User.builder()
                 .id(1L)
@@ -122,9 +133,33 @@ class ChatServiceTest {
         ArgumentCaptor<ChatMessage> captor = ArgumentCaptor.forClass(ChatMessage.class);
         verify(chatMessageRepository).save(captor.capture());
         ChatMessage saved = captor.getValue();
-        assertThat(saved.getContent()).isEqualTo("  raw content  ");
+        assertThat(saved.getContent()).isEqualTo("raw content");
         assertThat(saved.getSenderNickname()).isEqualTo("kimda");
         assertThat(saved.getSenderProfileColor()).isEqualTo("#FF5733");
+    }
+
+    @Test
+    @DisplayName("trim 후 2000자 이하면 저장할 수 있다")
+    void sendMessage_contentWithOuterSpacesAllowedWhenTrimmedLengthIsValid() {
+        ChatMessageSendRequest request = sendRequest(" " + "a".repeat(2000) + " ");
+        User sender = User.builder()
+                .id(1L)
+                .email("chat1@test.com")
+                .nickname("kimda")
+                .provider(User.Provider.LOCAL)
+                .profileColor("#FF5733")
+                .agreeService(true)
+                .agreeFinance(true)
+                .build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
+        when(chatMessageRepository.save(any(ChatMessage.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        chatService.sendMessage(1L, 1L, request);
+
+        ArgumentCaptor<ChatMessage> captor = ArgumentCaptor.forClass(ChatMessage.class);
+        verify(chatMessageRepository).save(captor.capture());
+        assertThat(captor.getValue().getContent()).hasSize(2000);
     }
 
     private ChatMessageSendRequest sendRequest(String content) {

@@ -27,7 +27,7 @@ public class ChatService {
 
     @Transactional
     public ChatMessageResponse sendMessage(Long projectId, Long senderId, ChatMessageSendRequest request) {
-        validateContent(request.getContent());
+        String content = normalizeContent(request.getContent());
 
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.USER_NOT_FOUND));
@@ -37,7 +37,7 @@ public class ChatService {
                 .senderId(senderId)
                 .senderNickname(sender.getNickname())
                 .senderProfileColor(sender.getProfileColor())
-                .content(request.getContent())
+                .content(content)
                 .build();
 
         ChatMessage saved = chatMessageRepository.save(message);
@@ -83,7 +83,7 @@ public class ChatService {
         return Math.min(Math.max(size, 1), 100);
     }
 
-    private void validateContent(String content) {
+    private String normalizeContent(String content) {
         String normalized = content == null ? null : content.trim();
 
         if (!StringUtils.hasText(normalized)) {
@@ -92,5 +92,6 @@ public class ChatService {
         if (normalized.length() > 2000) {
             throw new ChatException(ChatErrorCode.CHAT_CONTENT_TOO_LONG);
         }
+        return normalized;
     }
 }
