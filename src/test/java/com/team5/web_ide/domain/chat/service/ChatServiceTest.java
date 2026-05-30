@@ -132,8 +132,6 @@ class ChatServiceTest {
                             .id(200L)
                             .projectId(arg.getProjectId())
                             .senderId(arg.getSenderId())
-                            .senderNickname(arg.getSenderNickname())
-                            .senderProfileColor(arg.getSenderProfileColor())
                             .content(arg.getContent())
                             .createdAt(LocalDateTime.now())
                             .build();
@@ -145,8 +143,8 @@ class ChatServiceTest {
         verify(chatMessageRepository).save(captor.capture());
         ChatMessage saved = captor.getValue();
         assertThat(saved.getContent()).isEqualTo("raw content");
-        assertThat(saved.getSenderNickname()).isEqualTo("kimda");
-        assertThat(saved.getSenderProfileColor()).isEqualTo("#FF5733");
+        assertThat(response.getSenderNickname()).isEqualTo("kimda");
+        assertThat(response.getSenderProfileColor()).isEqualTo("#FF5733");
     }
 
     @Test
@@ -205,8 +203,6 @@ class ChatServiceTest {
                 .projectId(1L)
                 .senderId(1L)
                 .sender(user("kimda", "#FF5733"))
-                .senderNickname("kimda")
-                .senderProfileColor("#FF5733")
                 .content(content)
                 .createdAt(LocalDateTime.now())
                 .build();

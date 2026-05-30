@@ -46,8 +46,6 @@ public class ChatService {
         ChatMessage message = ChatMessage.builder()
                 .projectId(projectId)
                 .senderId(senderId)
-                .senderNickname(sender.getNickname())
-                .senderProfileColor(sender.getProfileColor())
                 .content(content)
                 .build();
 

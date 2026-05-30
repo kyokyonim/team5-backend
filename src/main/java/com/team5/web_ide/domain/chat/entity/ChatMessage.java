@@ -46,12 +46,6 @@ public class ChatMessage {
     @JoinColumn(name = "sender_id", nullable = false, insertable = false, updatable = false)
     private User sender;
 
-    @Column(name = "sender_nickname", nullable = false, length = 6)
-    private String senderNickname;
-
-    @Column(name = "sender_profile_color", nullable = false, length = 7)
-    private String senderProfileColor;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
