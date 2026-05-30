@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WS Chat Test</title>
+  <style>
+    body { font-family: sans-serif; margin: 24px; }
+    input, button { margin: 4px 0; padding: 8px; }
+    #log { white-space: pre-wrap; border: 1px solid #ccc; padding: 12px; height: 320px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h2>WebSocket Chat Test</h2>
+
+  <label>Project ID</label><br />
+  <input id="projectId" value="1" /><br />
+
+  <label>Message</label><br />
+  <input id="content" value="hello from browser" style="width: 360px;" /><br />
+
+  <button id="connectBtn">Connect</button>
+  <button id="sendBtn">Send</button>
+  <button id="disconnectBtn">Disconnect</button>
+
+  <h3>Log</h3>
+  <div id="log"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+  <script>
+    let client = null;
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+      const line = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      logEl.textContent += line + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    document.getElementById('connectBtn').onclick = () => {
+      const projectId = document.getElementById('projectId').value;
+      client = new StompJs.Client({
+        brokerURL: 'ws://localhost:8080/ws',
+        connectHeaders: { Authorization: 'Bearer test-token' },
+        reconnectDelay: 3000,
+        onConnect: () => {
+          log('CONNECTED');
+
+          client.subscribe(`/topic/projects/${projectId}/chat`, (msg) => {
+            log(`CHAT: ${msg.body}`);
+          });
+
+          client.subscribe('/user/queue/errors', (msg) => {
+            log(`ERROR: ${msg.body}`);
+          });
+        },
+        onStompError: (frame) => log(`STOMP ERROR: ${frame.body}`),
+        onWebSocketError: (err) => log(`WS ERROR: ${err}`),
+        debug: (str) => log(`DEBUG: ${str}`),
+      });
+
+      client.activate();
+    };
+
+    document.getElementById('sendBtn').onclick = () => {
+      if (!client || !client.connected) {
+        log('NOT CONNECTED');
+        return;
+      }
+
+      const projectId = document.getElementById('projectId').value;
+      const content = document.getElementById('content').value;
+
+      client.publish({
+        destination: `/app/projects/${projectId}/chat`,
+        body: JSON.stringify({ content })
+      });
+
+      log(`SENT: ${content}`);
+    };
+
+    document.getElementById('disconnectBtn').onclick = () => {
+      if (client) {
+        client.deactivate();
+        log('DISCONNECTED');
+      }
+    };
+  </script>
+</body>
+</html>

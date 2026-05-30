@@ -23,6 +23,11 @@ Thumbs.db
 .env.*
 application.yml
 application-*.yml
+src/main/resources/application-local.properties
+*.pem
+*.key
+*.p12
+*.jks
 !application-example.yml
 !application-local-example.yml
 
