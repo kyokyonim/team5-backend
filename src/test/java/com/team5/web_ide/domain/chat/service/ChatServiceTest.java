@@ -76,6 +76,47 @@ class ChatServiceTest {
     }
 
     @Test
+    @DisplayName("VIEWER는 채팅 메시지를 조회할 수 있다")
+    void getMessages_viewerRole_returnsMessages() {
+        when(projectService.validateProjectMember(1L, 1L))
+                .thenReturn(ProjectMember.builder()
+                        .role(ProjectMember.ProjectRole.VIEWER)
+                        .build());
+        when(chatMessageRepository.findByProjectIdOrderByIdDesc(eq(1L), any()))
+                .thenReturn(List.of(message(105L, "m1")));
+
+        ChatMessageListResponse result = chatService.getMessages(1L, 1L, 50, null);
+
+        assertThat(result.getMessages()).hasSize(1);
+        assertThat(result.isHasMore()).isFalse();
+        assertThat(result.getNextCursor()).isNull();
+    }
+
+    @Test
+    @DisplayName("프로젝트 멤버가 아니면 채팅 메시지를 조회할 수 없다")
+    void getMessages_nonMember_throwsAccessDenied() {
+        when(projectService.validateProjectMember(1L, 1L))
+                .thenThrow(new ProjectException(ProjectErrorCode.PROJECT_ACCESS_DENIED));
+
+        assertThatThrownBy(() -> chatService.getMessages(1L, 1L, 50, null))
+                .isInstanceOf(ProjectException.class)
+                .extracting(ex -> ((ProjectException) ex).getErrorCode())
+                .isEqualTo(ProjectErrorCode.PROJECT_ACCESS_DENIED);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 프로젝트의 채팅 메시지는 조회할 수 없다")
+    void getMessages_projectNotFound_throwsException() {
+        when(projectService.findActiveProject(1L))
+                .thenThrow(new ProjectException(ProjectErrorCode.PROJECT_NOT_FOUND));
+
+        assertThatThrownBy(() -> chatService.getMessages(1L, 1L, 50, null))
+                .isInstanceOf(ProjectException.class)
+                .extracting(ex -> ((ProjectException) ex).getErrorCode())
+                .isEqualTo(ProjectErrorCode.PROJECT_NOT_FOUND);
+    }
+
+    @Test
     @DisplayName("공백 메시지는 CHAT_CONTENT_EMPTY 예외를 던진다")
     void sendMessage_blankContent_throwsException() {
         givenCanSend(ProjectMember.ProjectRole.EDITOR);
