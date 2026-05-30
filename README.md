@@ -20,7 +20,7 @@
 * 🔌 **[API 설계서](https://secret-snarl-bb0.notion.site/API-36bd3570df818005bef4ff65e37064e3)**
 * 🎨 **[Figma (화면 설계)](https://www.figma.com/design/uJerc6vqBIaH3ZIxUoa5l2/WebIDE?node-id=136-1084&p=f&t=YFJNCiRACj1VGtIH-0)**
 * 📑 **[프로젝트 기획서](https://www.notion.so/WEB-IDE-35b8294ef2a88063b7e0e4b226d94c2f)**
-
+* 📑 **[백엔드 멘토링 1차/2차](https://www.notion.so/2-36f8294ef2a880cbb75dfe753d8d663b?source=copy_link)**
 ---
 
 ## ✨ 핵심 기능 (Core Features)
@@ -37,7 +37,7 @@
 | 담당자 | 담당 도메인 (Domain) | 내가 책임지는 기능들 🛠️ |
 | :--- | :--- | :--- |
 | **김다은** | Auth / User / Profile | 회원가입, 로그인(JWT), 내 정보/프로필 관리 |
-| **정윤서** | Project / Member / Comment / Presence(활성 사용자) | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리, 접속자 상태 표시, 댓글 |
+| **정윤서** | Project / Member / Comment / Presence(활성 사용자) / Admin | 프로젝트 CRUD, 멤버 초대, 권한(Owner/Editor/Viewer) 매트릭스 관리, 접속자 상태 표시, 댓글 |
 | **최희원** | IDE / File | Monaco Editor 연결, 파일 트리, 파일/폴더 CRUD, 코드 저장 및 파일 잠금(Lock) |
 | **조아영** | Chat / Presence / Admin / Log | 실시간 채팅(WebSocket),  관리자 기능, 활동 로그 |
 
@@ -50,7 +50,7 @@
 * **Framework:** Spring Boot, Spring Security
 * **Database:** PostgreSQL (개발용 H2), Spring Data JPA
 * **Realtime & Cache:** WebSocket, STOMP, Redis (예정)
-* **Auth:** JWT, OAuth2 Client
+* **Auth:** JWT, OAuth2 Client(소셜 로그인 구현한다면,,)
 * **Docs:** Swagger / Springdoc
 
 ---
@@ -159,6 +159,15 @@ team5-backend/
 4. (중요) `application.yml` 같은 민감한 시크릿 키값 절대 올리지 않기! 🚨
 
 ---
+## 🐳 로컬 개발 환경 (Docker)
+
+팀원은 DB/Redis를 아래 명령으로 통일해서 실행합니다.
+
+### 1) 인프라 실행
+
+```bash
+docker compose up -d
+
 
 ### 📡 공통 API 응답 포맷
 프론트엔드 개발자가 편안하게 파싱할 수 있도록 응답을 통일했습니다.
