@@ -52,7 +52,7 @@ public class ChatService {
                 .build();
 
         ChatMessage saved = chatMessageRepository.save(message);
-        return ChatMessageResponse.from(saved);
+        return ChatMessageResponse.from(saved, sender);
     }
 
     @Transactional(readOnly = true)

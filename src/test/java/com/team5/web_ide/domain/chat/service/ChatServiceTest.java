@@ -204,10 +204,23 @@ class ChatServiceTest {
                 .id(id)
                 .projectId(1L)
                 .senderId(1L)
+                .sender(user("kimda", "#FF5733"))
                 .senderNickname("kimda")
                 .senderProfileColor("#FF5733")
                 .content(content)
                 .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    private User user(String nickname, String profileColor) {
+        return User.builder()
+                .id(1L)
+                .email("chat1@test.com")
+                .nickname(nickname)
+                .provider(User.Provider.LOCAL)
+                .profileColor(profileColor)
+                .agreeService(true)
+                .agreeFinance(true)
                 .build();
     }
 }

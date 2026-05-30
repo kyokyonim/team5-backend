@@ -1,6 +1,7 @@
 package com.team5.web_ide.domain.chat.dto;
 
 import com.team5.web_ide.domain.chat.entity.ChatMessage;
+import com.team5.web_ide.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,11 +18,15 @@ public class ChatMessageResponse {
     private LocalDateTime createdAt;
 
     public static ChatMessageResponse from(ChatMessage message) {
+        return from(message, message.getSender());
+    }
+
+    public static ChatMessageResponse from(ChatMessage message, User sender) {
         return ChatMessageResponse.builder()
                 .id(message.getId())
                 .senderId(message.getSenderId())
-                .senderNickname(message.getSenderNickname())
-                .senderProfileColor(message.getSenderProfileColor())
+                .senderNickname(sender.getNickname())
+                .senderProfileColor(sender.getProfileColor())
                 .content(message.getContent())
                 .createdAt(message.getCreatedAt())
                 .build();
