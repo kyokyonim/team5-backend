@@ -1,6 +1,7 @@
 package com.team5.web_ide.domain.chat.service;
 
 import com.team5.web_ide.domain.chat.dto.ChatMessageListResponse;
+import com.team5.web_ide.domain.chat.dto.ChatMessageResponse;
 import com.team5.web_ide.domain.chat.dto.ChatMessageSendRequest;
 import com.team5.web_ide.domain.chat.entity.ChatMessage;
 import com.team5.web_ide.domain.chat.exception.ChatErrorCode;
@@ -137,7 +138,7 @@ class ChatServiceTest {
                             .build();
                 });
 
-        chatService.sendMessage(1L, 1L, request);
+        ChatMessageResponse response = chatService.sendMessage(1L, 1L, request);
 
         ArgumentCaptor<ChatMessage> captor = ArgumentCaptor.forClass(ChatMessage.class);
         verify(chatMessageRepository).save(captor.capture());
