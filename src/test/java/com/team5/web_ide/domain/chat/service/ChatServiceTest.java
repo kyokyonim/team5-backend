@@ -65,6 +65,8 @@ class ChatServiceTest {
                 message(104L, "m2"),
                 message(103L, "m3")
         );
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user("kimda", "#FF5733")));
         when(chatMessageRepository.findByProjectIdOrderByIdDesc(eq(1L), any()))
                 .thenReturn(rows);
 
@@ -82,6 +84,8 @@ class ChatServiceTest {
                 .thenReturn(ProjectMember.builder()
                         .role(ProjectMember.ProjectRole.VIEWER)
                         .build());
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user("kimda", "#FF5733")));
         when(chatMessageRepository.findByProjectIdOrderByIdDesc(eq(1L), any()))
                 .thenReturn(List.of(message(105L, "m1")));
 
@@ -226,6 +230,36 @@ class ChatServiceTest {
                 .isEqualTo(ProjectErrorCode.PROJECT_ACCESS_DENIED);
     }
 
+    @Test
+    @DisplayName("Inactive user cannot retrieve chat messages")
+    void getMessages_inactiveUser_throwsException() {
+        when(projectService.validateProjectMember(1L, 1L))
+                .thenReturn(ProjectMember.builder()
+                        .role(ProjectMember.ProjectRole.EDITOR)
+                        .build());
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user("kimda", "#FF5733", User.Status.BANNED)));
+
+        assertThatThrownBy(() -> chatService.getMessages(1L, 1L, 50, null))
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.USER_STATUS_BLOCKED);
+    }
+
+    @Test
+    @DisplayName("Inactive user cannot send chat messages")
+    void sendMessage_inactiveUser_throwsException() {
+        givenCanSend(ProjectMember.ProjectRole.EDITOR);
+        ChatMessageSendRequest request = sendRequest("hello");
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user("kimda", "#FF5733", User.Status.BANNED)));
+
+        assertThatThrownBy(() -> chatService.sendMessage(1L, 1L, request))
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.USER_STATUS_BLOCKED);
+    }
+
     private void givenCanSend(ProjectMember.ProjectRole role) {
         when(projectService.validateProjectMember(1L, 1L))
                 .thenReturn(ProjectMember.builder()
@@ -251,12 +285,17 @@ class ChatServiceTest {
     }
 
     private User user(String nickname, String profileColor) {
+        return user(nickname, profileColor, User.Status.ACTIVE);
+    }
+
+    private User user(String nickname, String profileColor, User.Status status) {
         return User.builder()
                 .id(1L)
                 .email("chat1@test.com")
                 .nickname(nickname)
                 .provider(User.Provider.LOCAL)
                 .profileColor(profileColor)
+                .status(status)
                 .agreeService(true)
                 .agreeFinance(true)
                 .build();

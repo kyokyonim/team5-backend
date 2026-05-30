@@ -40,8 +40,7 @@ public class ChatService {
 
         String content = normalizeContent(request.getContent());
 
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new ChatException(ChatErrorCode.USER_NOT_FOUND));
+        User sender = findActiveUser(senderId);
 
         ChatMessage message = ChatMessage.builder()
                 .projectId(projectId)
@@ -55,14 +54,15 @@ public class ChatService {
 
     @Transactional(readOnly = true)
     public ChatMessageListResponse getMessages(Long projectId, Long requesterId, Integer size, Long before) {
-        projectService.findActiveProject(projectId);
-        projectService.validateProjectMember(projectId, requesterId);
-
         int normalizedSize = normalizeSize(size);
 
         if (before != null && before <= 0L) {
             throw new ChatException(ChatErrorCode.CHAT_INVALID_CURSOR);
         }
+
+        projectService.findActiveProject(projectId);
+        projectService.validateProjectMember(projectId, requesterId);
+        findActiveUser(requesterId);
 
         Pageable pageable = PageRequest.of(0, normalizedSize + 1);
 
@@ -105,5 +105,14 @@ public class ChatService {
             throw new ChatException(ChatErrorCode.CHAT_CONTENT_TOO_LONG);
         }
         return normalized;
+    }
+
+    private User findActiveUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.USER_NOT_FOUND));
+        if (user.getStatus() != User.Status.ACTIVE) {
+            throw new ChatException(ChatErrorCode.USER_STATUS_BLOCKED);
+        }
+        return user;
     }
 }
