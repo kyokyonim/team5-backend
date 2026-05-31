@@ -22,15 +22,13 @@ public class AuthService {
     @Transactional
     public User signup(SignupRequestDto dto) {
 
-        // 이메일 중복 검사
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다");
         }
 
-        // 닉네임 자동 생성 (이메일 앞부분 영어만 최대 6글자)
         String nickname = dto.getEmail()
                 .split("@")[0]
-                .replaceAll("[^a-zA-Z]", "")
+                .replaceAll("[^a-zA-Z0-9_]", "")
                 .toLowerCase();
         if (nickname.length() > 6) {
             nickname = nickname.substring(0, 6);
@@ -39,10 +37,8 @@ public class AuthService {
             nickname = "user";
         }
 
-        // 비밀번호 암호화
         String passwordHash = passwordEncoder.encode(dto.getPassword());
 
-        // User 저장
         User user = User.builder()
                 .email(dto.getEmail())
                 .passwordHash(passwordHash)
@@ -61,25 +57,21 @@ public class AuthService {
         return !userRepository.existsByEmail(email);
     }
 
-    // 로그인
+    // 이메일 로그인
     @Transactional
     public LoginResponseDto login(String email, String password) {
 
-        // 유저 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다"));
 
-        // 상태 확인
         if (user.getStatus() != User.Status.ACTIVE) {
             throw new IllegalArgumentException("사용할 수 없는 계정입니다");
         }
 
-        // 비밀번호 확인
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다");
         }
 
-        // 토큰 발급
         String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getId());
 
