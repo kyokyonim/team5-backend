@@ -225,9 +225,9 @@ class ChatServiceTest {
         ChatMessageSendRequest request = sendRequest("hello");
 
         assertThatThrownBy(() -> chatService.sendMessage(1L, 1L, request))
-                .isInstanceOf(ProjectException.class)
-                .extracting(ex -> ((ProjectException) ex).getErrorCode())
-                .isEqualTo(ProjectErrorCode.PROJECT_ACCESS_DENIED);
+                .isInstanceOf(ChatException.class)
+                .extracting(ex -> ((ChatException) ex).getErrorCode())
+                .isEqualTo(ChatErrorCode.CHAT_SEND_DENIED);
     }
 
     @Test
