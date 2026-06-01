@@ -1,5 +1,8 @@
 package com.team5.web_ide.domain.admin.service;
 
+import com.team5.web_ide.domain.activitylog.enums.ActivityAction;
+import com.team5.web_ide.domain.activitylog.enums.ActivityTargetType;
+import com.team5.web_ide.domain.activitylog.service.ActivityLogService;
 import com.team5.web_ide.domain.admin.dto.AdminUserCategory;
 import com.team5.web_ide.domain.admin.dto.AdminUserListResponse;
 import com.team5.web_ide.domain.admin.dto.AdminUserResponse;
@@ -32,6 +35,7 @@ public class AdminUserService {
 
     private final AdminUserQueryRepository adminUserQueryRepository;
     private final UserRepository userRepository;
+    private final ActivityLogService activityLogService;
 
     public AdminUserListResponse getUsers(
             Long adminId,
@@ -69,7 +73,7 @@ public class AdminUserService {
 
     @Transactional
     public AdminUserStatusResponse suspendUser(Long adminId, Long userId) {
-        validateAdmin(adminId);
+        User admin = validateAdmin(adminId);
         if (adminId.equals(userId)) {
             throw new AdminUserException(AdminUserErrorCode.ADMIN_SELF_SUSPEND_DENIED);
         }
@@ -80,12 +84,13 @@ public class AdminUserService {
         }
 
         user.suspend();
+        recordUserStatusActivity(admin, user, ActivityAction.ACCOUNT_SUSPENDED, "계정을 정지했습니다.");
         return AdminUserStatusResponse.suspended(user);
     }
 
     @Transactional
     public AdminUserStatusResponse activateUser(Long adminId, Long userId) {
-        validateAdmin(adminId);
+        User admin = validateAdmin(adminId);
 
         User user = findUser(userId);
         if (user.getStatus() == User.Status.ACTIVE) {
@@ -93,6 +98,7 @@ public class AdminUserService {
         }
 
         user.activate();
+        recordUserStatusActivity(admin, user, ActivityAction.ACCOUNT_ACTIVATED, "계정을 활성화했습니다.");
         return AdminUserStatusResponse.activated(user);
     }
 
@@ -110,7 +116,7 @@ public class AdminUserService {
         return Math.min(Math.max(size, 1), MAX_SIZE);
     }
 
-    private void validateAdmin(Long adminId) {
+    private User validateAdmin(Long adminId) {
         if (adminId == null) {
             throw new ApiException(GlobalErrorCode.AUTH_UNAUTHORIZED);
         }
@@ -120,10 +126,29 @@ public class AdminUserService {
         if (admin.getStatus() != User.Status.ACTIVE || admin.getRole() != User.Role.ADMIN) {
             throw new ApiException(GlobalErrorCode.AUTH_UNAUTHORIZED);
         }
+        return admin;
     }
 
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AdminUserException(AdminUserErrorCode.USER_NOT_FOUND));
+    }
+
+    private void recordUserStatusActivity(
+            User admin,
+            User targetUser,
+            ActivityAction action,
+            String actionMessage
+    ) {
+        activityLogService.record(
+                admin.getId(),
+                action,
+                ActivityTargetType.USER,
+                targetUser.getId(),
+                null,
+                admin.getNickname() + "님이 " + targetUser.getNickname() + "님의 " + actionMessage,
+                null,
+                null
+        );
     }
 }
