@@ -4,6 +4,9 @@ import com.team5.web_ide.domain.admin.dto.AdminUserCategory;
 import com.team5.web_ide.domain.admin.dto.AdminUserListResponse;
 import com.team5.web_ide.domain.admin.dto.AdminUserResponse;
 import com.team5.web_ide.domain.admin.dto.AdminUserStatusFilter;
+import com.team5.web_ide.domain.admin.dto.AdminUserStatusResponse;
+import com.team5.web_ide.domain.admin.exception.AdminUserErrorCode;
+import com.team5.web_ide.domain.admin.exception.AdminUserException;
 import com.team5.web_ide.domain.admin.repository.AdminUserQueryRepository;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
@@ -64,6 +67,35 @@ public class AdminUserService {
         );
     }
 
+    @Transactional
+    public AdminUserStatusResponse suspendUser(Long adminId, Long userId) {
+        validateAdmin(adminId);
+        if (adminId.equals(userId)) {
+            throw new AdminUserException(AdminUserErrorCode.ADMIN_SELF_SUSPEND_DENIED);
+        }
+
+        User user = findUser(userId);
+        if (user.getStatus() == User.Status.BANNED) {
+            throw new AdminUserException(AdminUserErrorCode.USER_ALREADY_BANNED);
+        }
+
+        user.suspend();
+        return AdminUserStatusResponse.suspended(user);
+    }
+
+    @Transactional
+    public AdminUserStatusResponse activateUser(Long adminId, Long userId) {
+        validateAdmin(adminId);
+
+        User user = findUser(userId);
+        if (user.getStatus() == User.Status.ACTIVE) {
+            throw new AdminUserException(AdminUserErrorCode.USER_ALREADY_ACTIVE);
+        }
+
+        user.activate();
+        return AdminUserStatusResponse.activated(user);
+    }
+
     private int normalizePage(Integer page) {
         if (page == null) {
             return DEFAULT_PAGE;
@@ -88,5 +120,10 @@ public class AdminUserService {
         if (admin.getStatus() != User.Status.ACTIVE || admin.getRole() != User.Role.ADMIN) {
             throw new ApiException(GlobalErrorCode.AUTH_UNAUTHORIZED);
         }
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AdminUserException(AdminUserErrorCode.USER_NOT_FOUND));
     }
 }
