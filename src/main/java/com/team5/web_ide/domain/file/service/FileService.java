@@ -8,6 +8,8 @@ import com.team5.web_ide.domain.file.exception.FileException;
 import com.team5.web_ide.domain.file.repository.ProjectFileRepository;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
+import com.team5.web_ide.domain.member.entity.ProjectMember;
+import com.team5.web_ide.domain.project.service.ProjectService;
 import com.team5.web_ide.global.exception.ApiException;
 import com.team5.web_ide.global.exception.GlobalErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class FileService {
     private final ProjectFileRepository projectFileRepository;
     private final FileLockService fileLockService;
     private final UserRepository userRepository;
+    private final ProjectService projectService;
 
     public List<FileTreeResponse> getFileTree(Long projectId, Long userId) {
         validateProjectReadable(projectId, userId);
@@ -118,7 +121,7 @@ public class FileService {
             Long fileId,
             Long userId
     ) {
-        validateProjectReadable(projectId, userId);
+        ProjectMember member = validateProjectReadable(projectId, userId);
 
         ProjectFile file = getProjectFile(projectId, fileId);
 
@@ -126,7 +129,22 @@ public class FileService {
             throw new FileException(FileErrorCode.NOT_FILE);
         }
 
-        return FileDetailResponse.from(file);
+        FileLockInfo lockInfo = fileLockService.getLockInfo(projectId, fileId);
+        LockStatus lockStatus = resolveLockStatus(member, lockInfo, userId);
+
+        Boolean editable = isEditable(lockStatus);
+
+        LockUserResponse lockedBy = lockInfo == null
+                ? null
+                : LockUserResponse.from(lockInfo);
+
+        return FileDetailResponse.from(
+                file,
+                lockStatus,
+                editable,
+                lockedBy,
+                lockInfo == null ? null : lockInfo.getLockedAt()
+        );
     }
 
     @Transactional
@@ -457,24 +475,49 @@ public class FileService {
         return user;
     }
 
-    private void validateProjectReadable(Long projectId, Long userId) {
+    private ProjectMember validateProjectReadable(Long projectId, Long userId) {
         getActiveUser(userId);
 
-        // TODO: Project/Member 도메인 코드가 올라오면 구현
-        // 1. Project 존재 여부 확인
-        // 2. ProjectMember에서 projectId + userId 조회
-        // 3. OWNER, EDITOR, VIEWER이면 허용
+        projectService.findActiveProject(projectId);
+        return projectService.validateProjectMember(projectId, userId);
     }
 
     private void validateProjectWritable(Long projectId, Long userId) {
         getActiveUser(userId);
 
-        // TODO: Project/Member 도메인 코드가 올라오면 구현
-        // 1. Project 존재 여부 확인
-        // 2. ProjectMember에서 projectId + userId 조회
-        // 3. OWNER, EDITOR만 허용
-        // 4. VIEWER면 FILE_WRITE_DENIED
+        projectService.findActiveProject(projectId);
+        ProjectMember member = projectService.validateProjectMember(projectId, userId);
+
+        if (member.getRole() == ProjectMember.ProjectRole.VIEWER) {
+            throw new FileException(FileErrorCode.FILE_WRITE_DENIED);
+        }
     }
+
+    private LockStatus resolveLockStatus(
+            ProjectMember member,
+            FileLockInfo lockInfo,
+            Long userId
+    ) {
+        if (member.getRole() == ProjectMember.ProjectRole.VIEWER) {
+            return LockStatus.VIEWER_MODE;
+        }
+
+        if (lockInfo == null) {
+            return LockStatus.UNLOCKED;
+        }
+
+        if (lockInfo.getLockedBy().equals(userId)) {
+            return LockStatus.LOCKED_BY_ME;
+        }
+
+        return LockStatus.LOCKED_BY_OTHER;
+    }
+
+    private Boolean isEditable(LockStatus lockStatus) {
+        return lockStatus == LockStatus.UNLOCKED
+                || lockStatus == LockStatus.LOCKED_BY_ME;
+    }
+
 
     private String getCurrentUserNickname(Long userId) {
         return getActiveUser(userId).getNickname();
