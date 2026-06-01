@@ -34,3 +34,4 @@ src/main/resources/application-local.properties
 # Test / coverage
 coverage/
 reports/
+src/main/resources/application.properties
