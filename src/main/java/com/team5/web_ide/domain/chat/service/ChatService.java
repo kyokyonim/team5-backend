@@ -8,8 +8,6 @@ import com.team5.web_ide.domain.chat.exception.ChatErrorCode;
 import com.team5.web_ide.domain.chat.exception.ChatException;
 import com.team5.web_ide.domain.chat.repository.ChatMessageRepository;
 import com.team5.web_ide.domain.member.entity.ProjectMember;
-import com.team5.web_ide.domain.project.exception.ProjectErrorCode;
-import com.team5.web_ide.domain.project.exception.ProjectException;
 import com.team5.web_ide.domain.project.service.ProjectService;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
@@ -35,7 +33,7 @@ public class ChatService {
         projectService.findActiveProject(projectId);
         ProjectMember member = projectService.validateProjectMember(projectId, senderId);
         if (member.getRole() == ProjectMember.ProjectRole.VIEWER) {
-            throw new ProjectException(ProjectErrorCode.PROJECT_ACCESS_DENIED);
+            throw new ChatException(ChatErrorCode.CHAT_SEND_DENIED);
         }
 
         String content = normalizeContent(request.getContent());

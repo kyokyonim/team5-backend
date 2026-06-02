@@ -1,0 +1,25 @@
+package com.team5.web_ide.domain.activitylog.enums;
+
+public enum ActivityAction {
+    USER_SIGNUP,
+    USER_LOGIN,
+    USER_LOGOUT,
+    USER_DELETE,
+    PROFILE_UPDATE,
+
+    ACCOUNT_SUSPENDED,
+    ACCOUNT_ACTIVATED,
+    ADMIN_ROLE_UPDATE,
+
+    PROJECT_CREATE,
+    PROJECT_UPDATE,
+    PROJECT_DELETE,
+
+    MEMBER_INVITE,
+    MEMBER_ROLE_UPDATE,
+    MEMBER_LEAVE,
+
+    FILE_CREATE,
+    FILE_UPDATE,
+    FILE_DELETE
+}
