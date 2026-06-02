@@ -1,5 +1,6 @@
 package com.team5.web_ide.domain.presence.controller;
 
+import com.team5.web_ide.domain.presence.dto.PresenceConfigResponse;
 import com.team5.web_ide.domain.presence.dto.PresenceResponse;
 import com.team5.web_ide.domain.presence.exception.PresenceErrorCode;
 import com.team5.web_ide.domain.presence.exception.PresenceException;
@@ -8,10 +9,13 @@ import com.team5.web_ide.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/presence")
@@ -19,6 +23,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class PresenceController {
 
     private final PresenceService presenceService;
+
+    @GetMapping("/config")
+    public ResponseEntity<ApiResponse<PresenceConfigResponse>> getConfig() {
+        return ResponseEntity.ok(ApiResponse.success(
+                "Presence 설정 조회 성공",
+                presenceService.getConfig()
+        ));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PresenceResponse>>> getActiveUsers(
+            @PathVariable Long projectId,
+            Authentication authentication
+    ) {
+        Long userId = getCurrentUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success(
+                "현재 활성 접속자 목록 조회 성공",
+                presenceService.getActiveUsers(projectId, userId)
+        ));
+    }
 
     @PutMapping
     public ResponseEntity<ApiResponse<PresenceResponse>> activateCurrentUser(

@@ -1,0 +1,24 @@
+name: team5-local
+values:
+  - key: baseUrl
+    value: ''
+  - key: accessToken
+    value: ''
+  - key: refreshToken
+    value: ''
+  - key: ownerId
+    value: ''
+  - key: editorId
+    value: ''
+  - key: viewerId
+    value: ''
+  - key: projectId
+    value: ''
+  - key: memberId
+    value: ''
+  - key: fileId
+    value: ''
+  - key: commentId
+    value: ''
+  - key: ''
+    value: ''
