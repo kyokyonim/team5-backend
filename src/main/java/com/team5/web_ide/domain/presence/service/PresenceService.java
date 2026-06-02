@@ -1,6 +1,7 @@
 package com.team5.web_ide.domain.presence.service;
 
 import com.team5.web_ide.config.PresenceProperties;
+import com.team5.web_ide.domain.file.service.FileLockService;
 import com.team5.web_ide.domain.presence.dto.PresenceConfigResponse;
 import com.team5.web_ide.domain.presence.dto.PresenceResponse;
 import com.team5.web_ide.domain.presence.entity.Presence;
@@ -27,6 +28,7 @@ public class PresenceService {
     private final ProjectService projectService;
     private final UserRepository userRepository;
     private final PresenceProperties presenceProperties;
+    private final FileLockService fileLockService;
 
     public PresenceConfigResponse getConfig() {
         return new PresenceConfigResponse(
@@ -49,6 +51,18 @@ public class PresenceService {
 
         presence.activate();
         return PresenceResponse.from(presenceRepository.save(presence));
+    }
+
+    @Transactional
+    public void disconnectCurrentUser(Long projectId, Long userId) {
+        if (userId == null) {
+            throw new PresenceException(PresenceErrorCode.PRESENCE_UNAUTHORIZED);
+        }
+
+        projectService.findActiveProject(projectId);
+        fileLockService.unlockByUser(projectId, userId);
+        presenceRepository.findByProjectIdAndUserId(projectId, userId)
+                .ifPresent(presenceRepository::delete);
     }
 
     public List<PresenceResponse> getActiveUsers(Long projectId, Long requesterId) {

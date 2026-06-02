@@ -9,6 +9,7 @@ import com.team5.web_ide.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,6 +55,19 @@ public class PresenceController {
         return ResponseEntity.ok(ApiResponse.success(
                 "현재 사용자가 활성 상태로 갱신되었습니다.",
                 presenceService.activateCurrentUser(projectId, userId)
+        ));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> disconnectCurrentUser(
+            @PathVariable Long projectId,
+            Authentication authentication
+    ) {
+        Long userId = getCurrentUserId(authentication);
+        presenceService.disconnectCurrentUser(projectId, userId);
+
+        return ResponseEntity.ok(ApiResponse.success(
+                "현재 사용자의 활성 상태가 해제되었습니다."
         ));
     }
 
