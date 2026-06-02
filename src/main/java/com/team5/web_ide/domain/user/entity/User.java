@@ -86,4 +86,14 @@ public class User extends BaseEntity {
     public void updateProfileColor(String profileColor) {
         this.profileColor = profileColor;
     }
+
+    public void suspend() {
+        this.status = Status.BANNED;
+        this.tokenVersion++;
+    }
+
+    public void activate() {
+        this.status = Status.ACTIVE;
+        this.tokenVersion++;
+    }
 }

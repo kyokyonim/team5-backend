@@ -4,31 +4,25 @@ import com.team5.web_ide.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
 public class AdminUserResponse {
 
-    private Long id;
-    private String email;
+    private Long userId;
     private String nickname;
-    private User.Role role;
+    private String email;
     private User.Status status;
-    private User.Provider provider;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastLoginAt;
+    private LocalDate joinedAt;
 
     public static AdminUserResponse from(User user) {
         return new AdminUserResponse(
                 user.getId(),
-                user.getEmail(),
                 user.getNickname(),
-                user.getRole(),
+                user.getEmail(),
                 user.getStatus(),
-                user.getProvider(),
-                user.getCreatedAt(),
-                user.getLastLoginAt()
+                user.getCreatedAt().toLocalDate()
         );
     }
 }

@@ -3,7 +3,6 @@ package com.team5.web_ide.domain.admin.controller;
 import com.team5.web_ide.domain.admin.dto.AdminDashboardStatsResponse;
 import com.team5.web_ide.domain.admin.dto.AdminPresenceResponse;
 import com.team5.web_ide.domain.admin.dto.AdminProjectResponse;
-import com.team5.web_ide.domain.admin.dto.AdminUserResponse;
 import com.team5.web_ide.domain.admin.exception.AdminErrorCode;
 import com.team5.web_ide.domain.admin.exception.AdminException;
 import com.team5.web_ide.domain.admin.service.AdminService;
@@ -31,14 +30,6 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(
                 "관리자 대시보드 통계 조회 성공",
                 adminService.getDashboardStats(getCurrentUserId(authentication))
-        ));
-    }
-
-    @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<AdminUserResponse>>> getUsers(Authentication authentication) {
-        return ResponseEntity.ok(ApiResponse.success(
-                "관리자 사용자 목록 조회 성공",
-                adminService.getUsers(getCurrentUserId(authentication))
         ));
     }
 

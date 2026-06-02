@@ -11,6 +11,7 @@ public class FileLockResponse {
 
     private Long fileId;
     private Boolean locked;
+    private LockStatus lockStatus;
     private Boolean lockedByMe;
     private LockUserResponse lockedBy;
     private LocalDateTime lockedAt;
@@ -21,7 +22,19 @@ public class FileLockResponse {
         return FileLockResponse.builder()
                 .fileId(lockInfo.getFileId())
                 .locked(true)
+                .lockStatus(lockedByMe ? LockStatus.LOCKED_BY_ME : LockStatus.LOCKED_BY_OTHER)
                 .lockedByMe(lockedByMe)
+                .lockedBy(LockUserResponse.from(lockInfo))
+                .lockedAt(lockInfo.getLockedAt())
+                .build();
+    }
+
+    public static FileLockResponse lockedByMe(FileLockInfo lockInfo) {
+        return FileLockResponse.builder()
+                .fileId(lockInfo.getFileId())
+                .locked(true)
+                .lockStatus(LockStatus.LOCKED_BY_ME)
+                .lockedByMe(true)
                 .lockedBy(LockUserResponse.from(lockInfo))
                 .lockedAt(lockInfo.getLockedAt())
                 .build();

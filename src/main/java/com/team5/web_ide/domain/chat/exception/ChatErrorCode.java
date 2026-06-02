@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ChatErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found."),
     USER_STATUS_BLOCKED(HttpStatus.FORBIDDEN, "USER_STATUS_BLOCKED", "User is not active."),
+    CHAT_SEND_DENIED(HttpStatus.FORBIDDEN, "CHAT_SEND_DENIED", "VIEWER는 채팅을 보낼 수 없습니다."),
     CHAT_CONTENT_EMPTY(HttpStatus.BAD_REQUEST, "CHAT_CONTENT_EMPTY", "Message content is required."),
     CHAT_CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "CHAT_CONTENT_TOO_LONG", "Message must be 2000 characters or fewer."),
     CHAT_INVALID_CURSOR(HttpStatus.BAD_REQUEST, "CHAT_INVALID_CURSOR", "before must be greater than 0.");
