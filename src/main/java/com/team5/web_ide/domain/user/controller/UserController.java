@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -58,5 +60,23 @@ public class UserController {
                         "nickname", user.getNickname(),
                         "profileColor", user.getProfileColor()
                 )));
+    }
+
+    // Admin 유저 목록 조회
+    @GetMapping("/admin")
+    public ResponseEntity<ApiResponse<?>> getAllUsers() {
+        List<Map<String, Object>> users = userRepository.findAll().stream()
+                .map(user -> Map.of(
+                        "userId", (Object) user.getId(),
+                        "email", user.getEmail(),
+                        "nickname", user.getNickname(),
+                        "role", user.getRole(),
+                        "status", user.getStatus(),
+                        "provider", user.getProvider(),
+                        "createdAt", user.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.success("유저 목록 조회 성공", users));
     }
 }
