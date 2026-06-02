@@ -20,7 +20,9 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다"));
 
         if (dto.getNickname() != null) {
-            if (userRepository.existsByNickname(dto.getNickname())) {
+            // 자기 자신의 닉네임은 중복 체크에서 제외
+            if (!dto.getNickname().equals(user.getNickname()) &&
+                    userRepository.existsByNickname(dto.getNickname())) {
                 throw new IllegalArgumentException("이미 사용 중인 닉네임입니다");
             }
             user.updateNickname(dto.getNickname());
