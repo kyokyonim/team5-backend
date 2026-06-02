@@ -1,5 +1,6 @@
 package com.team5.web_ide.domain.chat.security;
 
+import com.team5.web_ide.domain.presence.service.PresenceConnectionRegistry;
 import com.team5.web_ide.domain.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
@@ -19,9 +20,12 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ChatSubscribeAuthorizationInterceptor implements ChannelInterceptor {
 
-    private static final Pattern CHAT_TOPIC_PATTERN = Pattern.compile("^/topic/projects/(\\d+)/chat$");
+    private static final Pattern PROJECT_TOPIC_PATTERN = Pattern.compile(
+            "^/topic/projects/(\\d+)/(chat|files/locks)$"
+    );
 
     private final ProjectService projectService;
+    private final PresenceConnectionRegistry presenceConnectionRegistry;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -30,7 +34,7 @@ public class ChatSubscribeAuthorizationInterceptor implements ChannelInterceptor
             return message;
         }
 
-        Long projectId = extractChatProjectId(accessor.getDestination());
+        Long projectId = extractProjectId(accessor.getDestination());
         if (projectId == null) {
             return message;
         }
@@ -38,15 +42,16 @@ public class ChatSubscribeAuthorizationInterceptor implements ChannelInterceptor
         Long userId = extractUserId(accessor);
         projectService.findActiveProject(projectId);
         projectService.validateProjectMember(projectId, userId);
+        presenceConnectionRegistry.register(accessor.getSessionId(), projectId, userId);
         return message;
     }
 
-    private Long extractChatProjectId(String destination) {
+    private Long extractProjectId(String destination) {
         if (destination == null) {
             return null;
         }
 
-        Matcher matcher = CHAT_TOPIC_PATTERN.matcher(destination);
+        Matcher matcher = PROJECT_TOPIC_PATTERN.matcher(destination);
         if (!matcher.matches()) {
             return null;
         }
