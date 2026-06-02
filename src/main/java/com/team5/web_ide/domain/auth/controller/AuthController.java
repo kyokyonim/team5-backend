@@ -1,6 +1,6 @@
 package com.team5.web_ide.domain.auth.controller;
-import com.team5.web_ide.domain.user.entity.User;
 
+import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.auth.dto.LoginRequestDto;
 import com.team5.web_ide.domain.auth.dto.LoginResponseDto;
 import com.team5.web_ide.domain.auth.dto.SignupRequestDto;
@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -51,7 +52,11 @@ public class AuthController {
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<?>> logout() {
-        return ResponseEntity.ok(ApiResponse.success("로그아웃 되었습니다."));
+    public ResponseEntity<ApiResponse<?>> logout(Authentication authentication) {
+        if (authentication != null) {
+            Long userId = (Long) authentication.getPrincipal();
+            authService.logout(userId);
+        }
+        return ResponseEntity.ok(ApiResponse.success("로그아웃 되었습니다.", null));
     }
 }

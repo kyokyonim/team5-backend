@@ -2,6 +2,8 @@ package com.team5.web_ide.domain.auth.service;
 
 import com.team5.web_ide.domain.auth.dto.LoginResponseDto;
 import com.team5.web_ide.domain.auth.dto.SignupRequestDto;
+import com.team5.web_ide.domain.auth.entity.RefreshToken;
+import com.team5.web_ide.domain.auth.repository.RefreshTokenRepository;
 import com.team5.web_ide.domain.user.entity.User;
 import com.team5.web_ide.domain.user.repository.UserRepository;
 import com.team5.web_ide.global.security.JwtUtil;
@@ -10,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -17,6 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // 회원가입
     @Transactional
@@ -75,6 +80,20 @@ public class AuthService {
         String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getId());
 
+        // RefreshToken DB 저장
+        LocalDateTime expiresAt = LocalDateTime.now().plusDays(30);
+        refreshTokenRepository.findByUserId(user.getId())
+                .ifPresentOrElse(
+                        rt -> rt.updateToken(refreshToken, expiresAt),
+                        () -> refreshTokenRepository.save(
+                                RefreshToken.builder()
+                                        .userId(user.getId())
+                                        .token(refreshToken)
+                                        .expiresAt(expiresAt)
+                                        .build()
+                        )
+                );
+
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -82,5 +101,11 @@ public class AuthService {
                 .nickname(user.getNickname())
                 .profileColor(user.getProfileColor())
                 .build();
+    }
+
+    // 로그아웃 시 RefreshToken 삭제
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenRepository.deleteByUserId(userId);
     }
 }
