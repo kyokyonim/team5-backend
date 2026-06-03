@@ -69,9 +69,12 @@ public class AdminController {
             throw new AdminException(AdminErrorCode.ADMIN_UNAUTHORIZED);
         }
         Object principal = authentication.getPrincipal();
-        if (!(principal instanceof Long userId)) {
-            throw new AdminException(AdminErrorCode.ADMIN_UNAUTHORIZED);
+        if (principal instanceof Long userId) {
+            return userId;
         }
-        return userId;
+        if (principal instanceof Integer userId) {
+            return userId.longValue();
+        }
+        throw new AdminException(AdminErrorCode.ADMIN_UNAUTHORIZED);
     }
 }

@@ -100,6 +100,7 @@ public class AuthService {
                 .userId(user.getId())
                 .nickname(user.getNickname())
                 .profileColor(user.getProfileColor())
+                .role(user.getRole())
                 .build();
     }
 

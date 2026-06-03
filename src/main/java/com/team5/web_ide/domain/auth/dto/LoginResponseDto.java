@@ -1,5 +1,6 @@
 package com.team5.web_ide.domain.auth.dto;
 
+import com.team5.web_ide.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,4 +17,5 @@ public class LoginResponseDto {
     private Long userId;
     private String nickname;
     private String profileColor;
+    private User.Role role;
 }
