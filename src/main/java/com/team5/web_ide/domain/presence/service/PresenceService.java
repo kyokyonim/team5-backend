@@ -29,6 +29,7 @@ public class PresenceService {
     private final UserRepository userRepository;
     private final PresenceProperties presenceProperties;
     private final FileLockService fileLockService;
+    private final PresenceConnectionRegistry presenceConnectionRegistry;
 
     public PresenceConfigResponse getConfig() {
         return new PresenceConfigResponse(
@@ -60,6 +61,10 @@ public class PresenceService {
         }
 
         projectService.findActiveProject(projectId);
+        if (presenceConnectionRegistry.hasActiveConnection(projectId, userId)) {
+            return;
+        }
+
         fileLockService.unlockByUser(projectId, userId);
         presenceRepository.findByProjectIdAndUserId(projectId, userId)
                 .ifPresent(presenceRepository::delete);
