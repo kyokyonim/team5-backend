@@ -2,6 +2,7 @@ package com.team5.web_ide.domain.admin.controller;
 
 import com.team5.web_ide.domain.admin.dto.AdminDashboardStatsResponse;
 import com.team5.web_ide.domain.admin.dto.AdminPresenceResponse;
+import com.team5.web_ide.domain.admin.dto.AdminProjectDetailResponse;
 import com.team5.web_ide.domain.admin.dto.AdminProjectResponse;
 import com.team5.web_ide.domain.admin.exception.AdminErrorCode;
 import com.team5.web_ide.domain.admin.exception.AdminException;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +40,17 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(
                 "관리자 프로젝트 목록 조회 성공",
                 adminService.getProjects(getCurrentUserId(authentication))
+        ));
+    }
+
+    @GetMapping("/projects/{projectId}")
+    public ResponseEntity<ApiResponse<AdminProjectDetailResponse>> getProjectDetail(
+            @PathVariable Long projectId,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+                "Admin project detail retrieved successfully.",
+                adminService.getProjectDetail(getCurrentUserId(authentication), projectId)
         ));
     }
 
