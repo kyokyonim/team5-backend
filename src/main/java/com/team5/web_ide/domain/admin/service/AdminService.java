@@ -3,8 +3,11 @@ package com.team5.web_ide.domain.admin.service;
 import com.team5.web_ide.config.PresenceProperties;
 import com.team5.web_ide.domain.admin.dto.AdminDashboardStatsResponse;
 import com.team5.web_ide.domain.admin.dto.AdminPresenceResponse;
+import com.team5.web_ide.domain.admin.dto.AdminProjectDetailResponse;
+import com.team5.web_ide.domain.admin.dto.AdminProjectMemberResponse;
 import com.team5.web_ide.domain.admin.dto.AdminProjectResponse;
 import com.team5.web_ide.domain.admin.exception.AdminErrorCode;
+import com.team5.web_ide.domain.project.exception.ProjectErrorCode;
 import com.team5.web_ide.domain.admin.exception.AdminException;
 import com.team5.web_ide.domain.member.repository.ProjectMemberRepository;
 import com.team5.web_ide.domain.presence.repository.PresenceRepository;
@@ -54,6 +57,20 @@ public class AdminService {
                         projectMemberRepository.countByProjectId(project.getId())
                 ))
                 .toList();
+    }
+
+    public AdminProjectDetailResponse getProjectDetail(Long adminUserId, Long projectId) {
+        validateAdmin(adminUserId);
+
+        Project project = projectRepository.findByIdAndStatus(projectId, Project.ProjectStatus.ACTIVE)
+                .orElseThrow(() -> new AdminException(ProjectErrorCode.PROJECT_NOT_FOUND));
+
+        List<AdminProjectMemberResponse> members = projectMemberRepository.findAllByProjectIdOrderByIdAsc(projectId)
+                .stream()
+                .map(AdminProjectMemberResponse::from)
+                .toList();
+
+        return AdminProjectDetailResponse.from(project, members);
     }
 
     public List<AdminPresenceResponse> getActivePresences(Long adminUserId) {
