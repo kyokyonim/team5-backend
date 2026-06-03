@@ -5,6 +5,7 @@ import com.team5.web_ide.domain.auth.dto.LoginRequestDto;
 import com.team5.web_ide.domain.auth.dto.LoginResponseDto;
 import com.team5.web_ide.domain.auth.dto.SignupRequestDto;
 import com.team5.web_ide.domain.auth.service.AuthService;
+import com.team5.web_ide.domain.auth.service.PasswordResetService;
 import com.team5.web_ide.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.team5.web_ide.domain.auth.dto.ForgotPasswordRequestDto;
 
 import java.util.Map;
 
@@ -21,6 +23,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
     // 회원가입
     @PostMapping("/signup")
@@ -58,5 +61,19 @@ public class AuthController {
             authService.logout(userId);
         }
         return ResponseEntity.ok(ApiResponse.success("로그아웃 되었습니다.", null));
+    }
+
+    // 비밀번호 찾기 (이메일 발송)
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<?>> forgotPassword(@RequestBody ForgotPasswordRequestDto dto) {
+        passwordResetService.sendResetEmail(dto.getEmail());
+        return ResponseEntity.ok(ApiResponse.success("비밀번호 재설정 이메일을 발송했습니다.", null));
+    }
+
+    // 비밀번호 재설정
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<?>> resetPassword(@RequestBody Map<String, String> body) {
+        passwordResetService.resetPassword(body.get("token"), body.get("newPassword"));
+        return ResponseEntity.ok(ApiResponse.success("비밀번호가 재설정되었습니다.", null));
     }
 }

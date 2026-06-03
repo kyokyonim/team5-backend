@@ -79,6 +79,7 @@ public class User extends BaseEntity {
     public enum Status {
         ACTIVE, DELETED, BANNED
     }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -95,5 +96,9 @@ public class User extends BaseEntity {
     public void activate() {
         this.status = Status.ACTIVE;
         this.tokenVersion++;
+    }
+
+    public void updatePassword(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }
