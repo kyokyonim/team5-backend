@@ -174,6 +174,19 @@ public class FileController {
         );
     }
 
+    @DeleteMapping("/files/{fileId}/lock")
+    public ApiResponse<Void> unlockFile(
+        @PathVariable Long projectId,
+        @PathVariable Long fileId,
+        Authentication authentication
+    ) {
+        Long userId = getCurrentUserId(authentication);
+
+        fileService.unlockFile(projectId, fileId, userId);
+
+        return ApiResponse.success("파일 잠금이 해제되었습니다.");
+    }
+
     private Long getCurrentUserId(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new ApiException(GlobalErrorCode.AUTH_UNAUTHORIZED);

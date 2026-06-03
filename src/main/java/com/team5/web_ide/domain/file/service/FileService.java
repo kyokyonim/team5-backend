@@ -294,6 +294,22 @@ public class FileService {
         return FileLockResponse.from(lockInfo, userId);
     }
 
+    public void unlockFile(
+            Long projectId,
+            Long fileId,
+            Long userId
+    ) {
+        validateProjectWritable(projectId, userId);
+
+        ProjectFile file = getProjectFile(projectId, fileId);
+
+        if (!file.isFile()) {
+            throw new FileException(FileErrorCode.NOT_FILE);
+        }
+
+        fileLockService.unlock(projectId, fileId, userId);
+    }
+
     public boolean existsFile(Long projectId, Long fileId) {
         return projectFileRepository.findByIdAndProjectId(fileId, projectId)
                 .filter(ProjectFile::isFile)
