@@ -132,6 +132,20 @@ public class FileLockService {
         }
     }
 
+    public void unlock(Long projectId, Long fileId, Long userId) {
+        FileLockInfo lockInfo = getLockInfo(projectId, fileId);
+
+        if (lockInfo == null) {
+            return;
+        }
+
+        if (!lockInfo.getLockedBy().equals(userId)) {
+            throw new FileException(FileErrorCode.FILE_LOCK_OWNER_MISMATCH);
+        }
+
+        unlock(projectId, fileId);
+    }
+
     public void unlockByUser(Long projectId, Long userId) {
         // Presence 도메인에서 사용자가 프로젝트에서 나가거나 disconnect될 때 호출
         String userLockKey = userLockKey(projectId, userId);
